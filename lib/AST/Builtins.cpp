@@ -281,6 +281,24 @@ static ValueDecl *getBinaryPredicate(Identifier Id, Type ArgType) {
   return getBuiltinFunction(Id, ArgElts, ResultTy);
 }
 
+static unsigned getLeastWidthOrPointerWidth(ASTContext &Context,
+                                            BuiltinIntegerType *BIT) {
+  if (BIT->isPointerWidth()) {
+    return C.LangOpts.getPointerWidth();
+  } else {
+    return BIT->getLeastWidth();
+  }
+}
+
+static unsigned getGreatestWidthOrPointerWidth(ASTContext &Context,
+                                               BuiltinIntegerType *BIT) {
+  if (BIT->isPointerWidth()) {
+    return C.LangOpts.getPointerWidth();
+  } else {
+    return BIT->getGreatestWidth();
+  }
+}
+
 /// Build a cast.  There is some custom type checking here.
 static ValueDecl *getCastOperation(ASTContext &Context, Identifier Id,
                                    BuiltinValueKind VK,
@@ -311,16 +329,20 @@ static ValueDecl *getCastOperation(ASTContext &Context, Identifier Id,
     if (CheckOutput.isNull() ||
         !CheckInput->is<BuiltinIntegerType>() ||
         !CheckOutput->is<BuiltinIntegerType>() ||
-        CheckInput->castTo<BuiltinIntegerType>()->getLeastWidth() <=
-          CheckOutput->castTo<BuiltinIntegerType>()->getGreatestWidth())
+        getLeastWidthOrPointerWidth(
+          CheckInput->castTo<BuiltinIntegerType>()) <=
+          getGreatestWidthOrPointerWidth(
+            CheckOutput->castTo<BuiltinIntegerType>()))
       return nullptr;
     break;
   case BuiltinValueKind::TruncOrBitCast:
     if (CheckOutput.isNull() ||
         !CheckInput->is<BuiltinIntegerType>() ||
         !CheckOutput->is<BuiltinIntegerType>() ||
-        CheckInput->castTo<BuiltinIntegerType>()->getLeastWidth() <
-          CheckOutput->castTo<BuiltinIntegerType>()->getGreatestWidth())
+        getLeastWidthOrPointerWidth(
+          CheckInput->castTo<BuiltinIntegerType>()) <
+          getGreatestWidthOrPointerWidth(
+            CheckOutput->castTo<BuiltinIntegerType>()))
       return nullptr;
     break;
       
@@ -329,8 +351,10 @@ static ValueDecl *getCastOperation(ASTContext &Context, Identifier Id,
     if (CheckOutput.isNull() ||
         !CheckInput->is<BuiltinIntegerType>() ||
         !CheckOutput->is<BuiltinIntegerType>() ||
-        CheckInput->castTo<BuiltinIntegerType>()->getGreatestWidth() >=
-          CheckOutput->castTo<BuiltinIntegerType>()->getLeastWidth())
+        getGreatestWidthOrPointerWidth(
+          CheckInput->castTo<BuiltinIntegerType>()) >=
+          getLeastWidthOrPointerWidth(
+            CheckOutput->castTo<BuiltinIntegerType>()))
       return nullptr;
     break;
   }
@@ -339,8 +363,10 @@ static ValueDecl *getCastOperation(ASTContext &Context, Identifier Id,
     if (CheckOutput.isNull() ||
         !CheckInput->is<BuiltinIntegerType>() ||
         !CheckOutput->is<BuiltinIntegerType>() ||
-        CheckInput->castTo<BuiltinIntegerType>()->getGreatestWidth() >
-          CheckOutput->castTo<BuiltinIntegerType>()->getLeastWidth())
+        getGreatestWidthOrPointerWidth(
+          CheckInput->castTo<BuiltinIntegerType>()) >
+          getLeastWidthOrPointerWidth(
+            CheckOutput->castTo<BuiltinIntegerType>()))
       return nullptr;
     break;
   }
