@@ -1,0 +1,11 @@
+building swift instructions:
+
+- configure only
+ninja cmark
+ninja llvm
+ninja swift
+
+don't let the build script do the full build as it will attempt to build stdlib which isn't possible for avr
+
+
+to beef up the patch later, look at this PR for Haiku: https://github.com/apple/swift/pull/11583/files

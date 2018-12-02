@@ -562,6 +562,11 @@ function set_build_options_for_host() {
             SWIFT_HOST_TRIPLE="armv7-unknown-linux-gnueabihf"
             llvm_target_arch="ARM"
             ;;
+        embedded-avr)
+            SWIFT_HOST_VARIANT="macosx"
+            SWIFT_HOST_VARIANT_SDK="EMBEDDED"
+            SWIFT_HOST_VARIANT_ARCH="avr"
+            ;;
         macosx-*            | \
         iphoneos-*          | \
         iphonesimulator-*   | \
@@ -1076,7 +1081,7 @@ function false_true() {
 CROSS_COMPILE_HOSTS=($CROSS_COMPILE_HOSTS)
 for t in "${CROSS_COMPILE_HOSTS[@]}"; do
     case ${t} in
-        macosx* | iphone* | appletv* | watch* | linux-armv5 | linux-armv6 | linux-armv7 | android-* | openbsd-* )
+        macosx* | iphone* | appletv* | watch* | linux-armv5 | linux-armv6 | linux-armv7 | android-* | openbsd-* | embedded* )
             ;;
         *)
             echo "Unknown host to cross-compile for: ${t}"
