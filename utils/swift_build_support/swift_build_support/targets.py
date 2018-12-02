@@ -263,6 +263,8 @@ class StdlibDeploymentTarget(object):
         "powerpc64le",
         "s390x"])
 
+    Embedded = Platform("embedded", archs=["avr"])
+
     FreeBSD = Platform("freebsd", archs=["x86_64"])
 
     OpenBSD = Platform("openbsd", archs=["amd64"])
@@ -291,7 +293,8 @@ class StdlibDeploymentTarget(object):
         Android,
         Windows,
         Haiku,
-        WASI]
+        WASI,
+        Embedded]
 
     # Cache of targets by name.
     _targets_by_name = dict((target.name, target)
