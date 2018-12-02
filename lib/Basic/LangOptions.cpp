@@ -52,6 +52,7 @@ static const SupportedConditionalValue SupportedConditionalCompilationOSs[] = {
   "Cygwin",
   "Haiku",
   "WASI",
+  "Embedded"
 };
 
 static const SupportedConditionalValue SupportedConditionalCompilationArches[] = {
@@ -63,6 +64,7 @@ static const SupportedConditionalValue SupportedConditionalCompilationArches[] =
   "powerpc64le",
   "s390x",
   "wasm32",
+  "avr"
 };
 
 static const SupportedConditionalValue SupportedConditionalCompilationEndianness[] = {
@@ -321,7 +323,6 @@ std::pair<bool, bool> LangOptions::setTarget(llvm::Triple triple) {
     break;
   case llvm::Triple::ArchType::wasm32:
     addPlatformConditionValue(PlatformConditionKind::Arch, "wasm32");
-    break;
   case llvm::Triple::ArchType::avr:
     addPlatformConditionValue(PlatformConditionKind::Arch, "avr");
     break;
@@ -342,6 +343,7 @@ std::pair<bool, bool> LangOptions::setTarget(llvm::Triple triple) {
   case llvm::Triple::ArchType::wasm32:
   case llvm::Triple::ArchType::x86:
   case llvm::Triple::ArchType::x86_64:
+  case llvm::Triple::ArchType::avr:
     addPlatformConditionValue(PlatformConditionKind::Endianness, "little");
     break;
   case llvm::Triple::ArchType::ppc64:
