@@ -280,6 +280,8 @@ class StdlibDeploymentTarget(object):
 
     FreeBSD = Platform("freebsd", archs=["x86_64", "arm64"])
 
+    Embedded = Platform("embedded", archs=["avr"])
+
     OpenBSD = OpenBSDPlatform("openbsd", archs=["amd64"])
 
     Cygwin = Platform("cygwin", archs=["x86_64"])
@@ -306,7 +308,8 @@ class StdlibDeploymentTarget(object):
         Android,
         Windows,
         Haiku,
-        WASI]
+        WASI,
+        Embedded]
 
     # Cache of targets by name.
     _targets_by_name = dict((target.name, target)
