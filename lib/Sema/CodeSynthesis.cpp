@@ -370,7 +370,7 @@ synthesizeStubBody(AbstractFunctionDecl *fn, void *) {
   column->setBuiltinInitializer(uintInit);
 
   auto *call = CallExpr::createImplicit(
-      ctx, ref, { className, initName, file, line, column }, {});
+      ctx, ref, { }, {});
   call->setType(ctx.getNeverType());
   call->setThrows(false);
 

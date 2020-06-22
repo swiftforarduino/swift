@@ -577,8 +577,8 @@ static bool removeAndReleaseArray(SingleValueInstruction *NewArrayValue,
   if (!ArrayDef)
     return false; // No Array object to delete.
 
-  assert(!ArrayDef->getType().isTrivial(*ArrayDef->getFunction()) &&
-         "Array initialization should produce the proper tuple type.");
+  if (ArrayDef->getType().isTrivial(*ArrayDef->getFunction()))
+    return false; // this is not a normal array definition, optimisation won't work
 
   // Analyze the array object uses.
   DeadObjectAnalysis DeadArray(ArrayDef);

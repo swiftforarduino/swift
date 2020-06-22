@@ -65,7 +65,9 @@ llvm::Constant *irgen::emitAddrOfConstantString(IRGenModule &IGM,
   switch (SLI->getEncoding()) {
   case StringLiteralInst::Encoding::Bytes:
   case StringLiteralInst::Encoding::UTF8:
-    return IGM.getAddrOfGlobalString(SLI->getValue());
+    return IGM.getAddrOfGlobalString(SLI->getValue(),
+                            /*relatively addressed*/ false,
+                            /*store with text segment*/ true);
 
   case StringLiteralInst::Encoding::UTF16: {
     // This is always a GEP of a GlobalVariable with a nul terminator.

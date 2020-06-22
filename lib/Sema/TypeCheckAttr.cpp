@@ -1972,6 +1972,15 @@ static bool hasThrowingFunctionParameter(CanType type) {
 }
 
 void AttributeChecker::visitRethrowsAttr(RethrowsAttr *attr) {
+  if (!D->getASTContext().getErrorDecl()) {
+    // some SIL transforms on rethrows will generate a call to
+    // Builtin.rethrows, which needs the Error protocol defined in the
+    // standard library
+    TC.diagnose(attr->getLocation(), diag::error_protocol_not_found, 1);
+    attr->setInvalid();
+    return;
+  }
+
   // 'rethrows' only applies to functions that take throwing functions
   // as parameters.
   auto fn = cast<AbstractFunctionDecl>(D);

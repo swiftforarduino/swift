@@ -150,7 +150,7 @@ static llvm::Value *getPointerExtraInhabitantIndex(IRGenFunction &IGF,
 
     // Truncate down to i32 if necessary.
     if (index->getType() != IGF.IGM.Int32Ty) {
-      index = IGF.Builder.CreateTrunc(index, IGF.IGM.Int32Ty);
+      index = IGF.Builder.CreateZExtOrTrunc(index, IGF.IGM.Int32Ty);
     }
 
     phiValues.push_back({IGF.Builder.GetInsertBlock(), index});
@@ -187,7 +187,7 @@ static void storePointerExtraInhabitant(IRGenFunction &IGF,
                                         Address dest,
                                         unsigned numReservedLowBits) {
   if (index->getType() != IGF.IGM.SizeTy) {
-    index = IGF.Builder.CreateZExt(index, IGF.IGM.SizeTy);
+    index = IGF.Builder.CreateZExtOrTrunc(index, IGF.IGM.SizeTy);
   }
 
   if (numReservedLowBits) {

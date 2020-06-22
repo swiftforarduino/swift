@@ -4418,7 +4418,8 @@ Address IRGenFunction::createFixedSizeBufferAlloca(const llvm::Twine &name) {
 /// resolving relative references to coalesceable symbols.
 /// It should be removed when fixed. rdar://problem/22674524
 llvm::Constant *IRGenModule::getAddrOfGlobalString(StringRef data,
-                                               bool willBeRelativelyAddressed) {
+                                               bool willBeRelativelyAddressed,
+                                               bool storeWithFunctionsInTextSegment) {
   // Check whether this string already exists.
   auto &entry = GlobalStrings[data];
   if (entry.second) {
@@ -4429,7 +4430,7 @@ llvm::Constant *IRGenModule::getAddrOfGlobalString(StringRef data,
     return entry.second;
   }
 
-  entry = createStringConstant(data, willBeRelativelyAddressed);
+  entry = createStringConstant(data, willBeRelativelyAddressed, "", storeWithFunctionsInTextSegment);
   return entry.second;
 }
 

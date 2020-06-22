@@ -10,7 +10,7 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file defines the database of builtin C types that are imported as swift
+// This file defines the database of builtin clang types that are imported as swift
 // stdlib types.
 //
 // MAP_BUILTIN_TYPE(CLANG_BUILTIN_KIND, SWIFT_TYPE_NAME)

@@ -935,9 +935,11 @@ private:
 public:
   std::pair<llvm::GlobalVariable *, llvm::Constant *>
   createStringConstant(StringRef Str, bool willBeRelativelyAddressed = false,
-                       StringRef sectionName = "");
+                       StringRef sectionName = "",
+                       bool storeWithFunctionsInTextSegment = false);
   llvm::Constant *getAddrOfGlobalString(StringRef utf8,
-                                        bool willBeRelativelyAddressed = false);
+                                        bool willBeRelativelyAddressed = false,
+                                        bool storeWithFunctionsInTextSegment = false);
   llvm::Constant *getAddrOfGlobalUTF16String(StringRef utf8);
   llvm::Constant *getAddrOfObjCSelectorRef(StringRef selector);
   llvm::Constant *getAddrOfObjCSelectorRef(SILDeclRef method);
