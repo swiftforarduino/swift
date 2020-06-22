@@ -2245,6 +2245,9 @@ ConstraintSystem::getTypeOfMemberReference(
       return { genericErrorTy, genericErrorTy, genericErrorTy, genericErrorTy };
     }
     // This is the easy case.
+    if (!value->hasInterfaceType()) {
+      getTypeChecker().validateDecl(value); // HACK
+    }
     funcType = value->getInterfaceType()->castTo<AnyFunctionType>();
   } else {
     // For a property, build a type (Self) -> PropType.

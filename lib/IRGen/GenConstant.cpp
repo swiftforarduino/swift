@@ -104,7 +104,9 @@ llvm::Constant *irgen::emitAddrOfConstantString(IRGenModule &IGM,
   switch (SLI->getEncoding()) {
   case StringLiteralInst::Encoding::Bytes:
   case StringLiteralInst::Encoding::UTF8:
-    return IGM.getAddrOfGlobalString(SLI->getValue());
+    return IGM.getAddrOfGlobalString(SLI->getValue(),
+                            /*relatively addressed*/ false,
+                            /*store with text segment*/ true);
 
   case StringLiteralInst::Encoding::ObjCSelector:
     llvm_unreachable("cannot get the address of an Objective-C selector");
