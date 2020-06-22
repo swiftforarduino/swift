@@ -2631,6 +2631,15 @@ void AttributeChecker::visitRequiredAttr(RequiredAttr *attr) {
 }
 
 void AttributeChecker::visitRethrowsAttr(RethrowsAttr *attr) {
+  if (!D->getASTContext().getErrorDecl()) {
+    // some SIL transforms on rethrows will generate a call to
+    // Builtin.rethrows, which needs the Error protocol defined in the
+    // standard library
+    TC.diagnose(attr->getLocation(), diag::error_protocol_not_found, 1);
+    attr->setInvalid();
+    return;
+  }
+
   // Make sure the function takes a 'throws' function argument or a
   // conformance to a '@rethrows' protocol.
   auto fn = dyn_cast<AbstractFunctionDecl>(D);

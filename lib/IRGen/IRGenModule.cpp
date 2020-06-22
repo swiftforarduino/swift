@@ -1100,13 +1100,20 @@ void IRGenModule::registerRuntimeEffect(ArrayRef<RuntimeEffect> effect,
 #include "swift/Runtime/RuntimeFunctions.def"
 
 std::pair<llvm::GlobalVariable *, llvm::Constant *>
-IRGenModule::createStringConstant(StringRef Str, bool willBeRelativelyAddressed,
-                                  StringRef sectionName, StringRef name) {
+IRGenModule::createStringConstant(StringRef Str,
+  bool willBeRelativelyAddressed, StringRef sectionName, StringRef name,
+  bool storeWithFunctionsInTextSegment) {
   // If not, create it.  This implicitly adds a trailing null.
   auto init = llvm::ConstantDataArray::getString(getLLVMContext(), Str);
   auto global = new llvm::GlobalVariable(Module, init->getType(), true,
                                          llvm::GlobalValue::PrivateLinkage,
-                                         init, name);
+                                         init, name, nullptr, llvm::GlobalValue::NotThreadLocal,
+                                         /* put string constants into program memory to save RAM */
+                                         /* DataLayout.getProgramAddressSpace() */
+                                         /* for now hard code as hacked to 1 in my repo */
+                                         /* we will move to a generalised version when have P1 back in datalayout */
+                                         storeWithFunctionsInTextSegment ? 1 : 0);
+
   // FIXME: ld64 crashes resolving relative references to coalesceable symbols.
   // rdar://problem/22674524
   // If we intend to relatively address this string, don't mark it with
