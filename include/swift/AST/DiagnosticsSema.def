@@ -5395,6 +5395,9 @@ ERROR(pointer_argument_intrinsics_not_found,none,
 ERROR(array_literal_intrinsics_not_found,none,
       "broken standard library: cannot find intrinsic operations on "
       "Array<T>", ())
+ERROR(error_protocol_not_found,none,
+      "broken standard library: cannot find Error protocol "
+      "%select{|which may be needed to implement rethrows clause}0", (unsigned))
 ERROR(class_super_access,none,
       "class %select{must be declared %select{"
       "%select{private|fileprivate|internal|package|%error|%error}1|private or fileprivate}3"
