@@ -7267,7 +7267,9 @@ ConstraintSystem::matchTypes(Type type1, Type type2, ConstraintKind kind,
                 // The pointer can be converted from a string, if the element
                 // type is compatible.
                 auto &ctx = getASTContext();
-                if (type1->isString()) {
+                if (TypeChecker::getStringType(ctx)&&type1->isString()) {
+                // old code...
+                // if (TypeChecker::getStringType(ctx)&&type1->isEqual(TypeChecker::getStringType(ctx))) {
                   auto baseTy = getFixedTypeRecursive(pointeeTy, false);
 
                   if (baseTy->isTypeVariableOrMember() ||

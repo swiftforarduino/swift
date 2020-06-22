@@ -573,9 +573,13 @@ synthesizeStubBody(AbstractFunctionDecl *fn, void *) {
   column->setType(uintType);
   column->setBuiltinInitializer(uintInit);
 
+
+  // not sure if we need this hack any more or if it's safe to emit this stub function now?
   auto *argList = ArgumentList::forImplicitUnlabeled(
       ctx, {className, initName, file, line, column});
   auto *call = CallExpr::createImplicit(ctx, ref, argList);
+// was doing this...
+//   auto *call = CallExpr::createImplicit(ctx, ref, { }, {});
   call->setType(ctx.getNeverType());
   call->setThrows(false);
 
