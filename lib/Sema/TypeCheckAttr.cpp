@@ -2683,7 +2683,7 @@ void AttributeChecker::visitRethrowsAttr(RethrowsAttr *attr) {
     // some SIL transforms on rethrows will generate a call to
     // Builtin.rethrows, which needs the Error protocol defined in the
     // standard library
-    TC.diagnose(attr->getLocation(), diag::error_protocol_not_found, 1);
+    diagnose(attr->getLocation(), diag::error_protocol_not_found, 1);
     attr->setInvalid();
     return;
   }
