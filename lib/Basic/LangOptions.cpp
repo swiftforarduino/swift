@@ -322,6 +322,9 @@ std::pair<bool, bool> LangOptions::setTarget(llvm::Triple triple) {
   case llvm::Triple::ArchType::wasm32:
     addPlatformConditionValue(PlatformConditionKind::Arch, "wasm32");
     break;
+  case llvm::Triple::ArchType::avr:
+    addPlatformConditionValue(PlatformConditionKind::Arch, "avr");
+    break;
   default:
     UnsupportedArch = true;
   }
