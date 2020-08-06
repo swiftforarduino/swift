@@ -2442,9 +2442,6 @@ ConstraintSystem::getTypeOfMemberReference(
 
   if (isa<AbstractFunctionDecl>(value) || isa<EnumElementDecl>(value)) {
     // This is the easy case.
-    if (!value->hasInterfaceType()) {
-      getTypeChecker().validateDecl(value); // HACK
-    }
     openedType = value->getInterfaceType()->castTo<AnyFunctionType>();
 
     if (auto *genericFn = openedType->getAs<GenericFunctionType>()) {
