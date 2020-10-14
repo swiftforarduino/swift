@@ -47,6 +47,7 @@
 #include "llvm/Support/StringSaver.h"
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Support/raw_ostream.h"
+#include "sec.h"
 
 #include <memory>
 #include <stdlib.h>
@@ -376,6 +377,11 @@ int swift::mainEntry(int argc_, const char **argv_) {
   ArrayRef<const char *> argv(ExpandedArgs);
 
   PrettyStackTraceSwiftVersion versionStackTrace;
+
+  if (!_sch_(false) && !_sch_(true)) {
+    llvm::errs() << "error: this program must run by the S4A IDE, it does not work outside the IDE\n";
+    return 1;
+  }
 
   // Check if this invocation should execute a subcommand.
   StringRef ExecName = llvm::sys::path::stem(argv[0]);
