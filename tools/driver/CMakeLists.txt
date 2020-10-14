@@ -1,5 +1,6 @@
 add_swift_host_tool(swift
   driver.cpp
+  sec.c
   autolink_extract_main.cpp
   modulewrap_main.cpp
   swift_indent_main.cpp
