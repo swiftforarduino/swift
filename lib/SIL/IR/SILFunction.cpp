@@ -92,7 +92,8 @@ SILFunction::create(SILModule &M, SILLinkage linkage, StringRef name,
                     IsThunk_t isThunk,
                     SubclassScope classSubclassScope, Inline_t inlineStrategy,
                     EffectsKind E, SILFunction *insertBefore,
-                    const SILDebugScope *debugScope) {
+                    const SILDebugScope *debugScope,
+                    IsRealtime_t isRealtime) {
   // Get a StringMapEntry for the function.  As a sop to error cases,
   // allow the name to have an empty string.
   llvm::StringMapEntry<SILFunction*> *entry = nullptr;
@@ -118,7 +119,7 @@ SILFunction::create(SILModule &M, SILLinkage linkage, StringRef name,
                                 isBareSILFunction, isTrans, isSerialized,
                                 entryCount, isThunk, classSubclassScope,
                                 inlineStrategy, E, debugScope,
-                                isDynamic, isExactSelfClass, isDistributed);
+                                isDynamic, isExactSelfClass, isDistributed, isRealtime);
   }
   if (entry) entry->setValue(fn);
 
@@ -149,6 +150,7 @@ SILFunction::SILFunction(SILModule &Module, SILLinkage Linkage, StringRef Name,
                          const SILDebugScope *DebugScope,
                          IsDynamicallyReplaceable_t isDynamic,
                          IsExactSelfClass_t isExactSelfClass,
+<<<<<<< HEAD
                          IsDistributed_t isDistributed)
     : SwiftObjectHeader(functionMetatype), Module(Module),
       index(Module.getNewFunctionIndex()),
@@ -157,6 +159,35 @@ SILFunction::SILFunction(SILModule &Module, SILLinkage Linkage, StringRef Name,
        isSerialized, entryCount, isThunk, classSubclassScope, inlineStrategy,
        E, DebugScope, isDynamic, isExactSelfClass, isDistributed);
   
+=======
+                         IsRealtime_t isRealtime)
+    : Module(Module), Name(Name), LoweredType(LoweredType),
+      GenericEnv(genericEnv), SpecializationInfo(nullptr),
+      EntryCount(entryCount),
+      Availability(AvailabilityContext::alwaysAvailable()),
+      Bare(isBareSILFunction), Transparent(isTrans),
+      Serialized(isSerialized), Thunk(isThunk),
+      ClassSubclassScope(unsigned(classSubclassScope)), GlobalInitFlag(false),
+      InlineStrategy(inlineStrategy), Linkage(unsigned(Linkage)),
+      HasCReferences(false), IsWeakImported(false),
+      IsDynamicReplaceable(isDynamic),
+      ExactSelfClass(isExactSelfClass),
+      Inlined(false), Zombie(false), HasOwnership(true),
+      WasDeserializedCanonical(false), IsWithoutActuallyEscapingThunk(false),
+      OptMode(unsigned(OptimizationMode::NotSet)),
+      EffectsKindAttr(unsigned(E)), Realtime(unsigned(isRealtime)) {
+  assert(!Transparent || !IsDynamicReplaceable);
+  validateSubclassScope(classSubclassScope, isThunk, nullptr);
+  setDebugScope(DebugScope);
+
+  if (InsertBefore)
+    Module.functions.insert(SILModule::iterator(InsertBefore), this);
+  else
+    Module.functions.push_back(this);
+
+  Module.removeFromZombieList(Name);
+
+>>>>>>> a8cec9814ce (- basic pass scanning bitcode for runtime calls if @realtime attribute is present)
   // Set our BB list to have this function as its parent. This enables us to
   // splice efficiently basic blocks in between functions.
   BlockList.Parent = this;

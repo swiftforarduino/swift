@@ -157,6 +157,8 @@ public:
   IGNORED_ATTR(Isolated)
   IGNORED_ATTR(Preconcurrency)
   IGNORED_ATTR(BackDeploy)
+  IGNORED_ATTR(Realtime)
+  IGNORED_ATTR(Norealtime)
 #undef IGNORED_ATTR
 
   void visitAlignmentAttr(AlignmentAttr *attr) {

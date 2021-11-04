@@ -69,6 +69,11 @@ enum class PerformanceConstraints : uint8_t {
   NoAllocation = 1,
   NoLocks = 2,
 };
+enum IsRealtime_t {
+  IsNotRealtime,
+  IsRealtime,
+  IsRealtimeUseGlobalDefault
+};
 
 class SILSpecializeAttr final {
   friend SILFunction;
@@ -361,6 +366,10 @@ private:
   /// The function is in a statically linked module.
   unsigned IsStaticallyLinked : 1;
 
+  /// True if the function should be validated for realtime safety using
+  /// SwiftRealtimeVerifier.
+  unsigned Realtime : 3;
+
   static void
   validateSubclassScope(SubclassScope scope, IsThunk_t isThunk,
                         const GenericSpecializationInformation *genericInfo) {
@@ -397,7 +406,8 @@ private:
               EffectsKind E, const SILDebugScope *debugScope,
               IsDynamicallyReplaceable_t isDynamic,
               IsExactSelfClass_t isExactSelfClass,
-              IsDistributed_t isDistributed);
+              IsDistributed_t isDistributed,
+              IsRealtime_t isRealtime);
 
   static SILFunction *
   create(SILModule &M, SILLinkage linkage, StringRef name,
@@ -412,7 +422,8 @@ private:
          Inline_t inlineStrategy = InlineDefault,
          EffectsKind EffectsKindAttr = EffectsKind::Unspecified,
          SILFunction *InsertBefore = nullptr,
-         const SILDebugScope *DebugScope = nullptr);
+         const SILDebugScope *DebugScope = nullptr,
+         IsRealtime_t isRealtime = IsRealtime_t::IsRealtimeUseGlobalDefault);
 
   void init(SILLinkage Linkage, StringRef Name,
                          CanSILFunctionType LoweredType,
@@ -992,6 +1003,13 @@ public:
   void visitArgEffects(std::function<void(int, bool, ArgEffectKind)> c) const;
 
   Purpose getSpecialPurpose() const { return specialPurpose; }
+
+  /// \return should the function be validated for realtime safety.
+  IsRealtime_t isRealtime() const { return IsRealtime_t(Realtime); }
+
+  void setRealtime(IsRealtime_t realtime) {
+    Realtime = unsigned(realtime);
+  }
 
   /// Get this function's global_init attribute.
   ///

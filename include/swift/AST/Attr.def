@@ -735,6 +735,16 @@ CONTEXTUAL_SIMPLE_DECL_ATTR(_local, KnownToBeLocal,
 // If you're adding a new underscored attribute here, please document it in
 // docs/ReferenceGuides/UnderscoredAttributes.md.
 
+SIMPLE_DECL_ATTR(realtime, Realtime,
+  OnFunc |
+  ABIStableToAdd | ABIStableToRemove | APIStableToAdd | APIStableToRemove,
+  101)
+
+SIMPLE_DECL_ATTR(norealtime, Norealtime,
+  OnFunc |
+  ABIStableToAdd | ABIStableToRemove | APIStableToAdd | APIStableToRemove,
+  102)
+
 #undef TYPE_ATTR
 #undef DECL_ATTR_ALIAS
 #undef CONTEXTUAL_DECL_ATTR_ALIAS
