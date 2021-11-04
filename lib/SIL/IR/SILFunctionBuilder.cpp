@@ -185,6 +185,15 @@ void SILFunctionBuilder::addFunctionAttributes(
   if (Attrs.hasAttribute<NoDerivativeAttr>())
     F->addSemanticsAttr("autodiff.nonvarying");
 
+  // Propagate @realtime and @norealtime
+  if (Attrs.hasAttribute<RealtimeAttr>()) {
+    F->setRealtime(IsRealtime);
+  } else if (Attrs.hasAttribute<NorealtimeAttr>()) {
+    F->setRealtime(IsNotRealtime);
+  } else {
+    F->setRealtime(IsRealtimeUseGlobalDefault);
+  }
+
   // Propagate @_dynamicReplacement(for:).
   if (constant.isNull())
     return;

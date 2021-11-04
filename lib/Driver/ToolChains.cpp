@@ -254,6 +254,7 @@ void ToolChain::addCommonFrontendArgs(const OutputInfo &OI,
   inputArgs.AddLastArg(arguments, options::OPT_module_abi_name);
   inputArgs.AddLastArg(arguments, options::OPT_package_name);
   inputArgs.AddLastArg(arguments, options::OPT_nostdimport);
+  inputArgs.AddLastArg(arguments, options::OPT_realtime);
   inputArgs.AddLastArg(arguments, options::OPT_parse_stdlib);
   inputArgs.AddLastArg(arguments, options::OPT_resource_dir);
   inputArgs.AddLastArg(arguments, options::OPT_solver_memory_threshold);
