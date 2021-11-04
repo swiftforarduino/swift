@@ -1534,6 +1534,8 @@ namespace  {
     UNINTERESTING_ATTR(Optional)
     UNINTERESTING_ATTR(Override)
     UNINTERESTING_ATTR(RawDocComment)
+    UNINTERESTING_ATTR(Realtime)
+    UNINTERESTING_ATTR(Norealtime)
     UNINTERESTING_ATTR(Required)
     UNINTERESTING_ATTR(Convenience)
     UNINTERESTING_ATTR(Semantics)

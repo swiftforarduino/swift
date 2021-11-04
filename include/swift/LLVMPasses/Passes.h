@@ -155,6 +155,15 @@ namespace swift {
     llvm::PreservedAnalyses run(llvm::Module &M,
                                 llvm::ModuleAnalysisManager &AM);
   };
+
+  class SwiftRealtimeVerifier : public llvm::FunctionPass {
+    virtual void getAnalysisUsage(llvm::AnalysisUsage &AU) const override;
+    virtual bool runOnFunction(llvm::Function &F) override;
+  public:
+    static char ID;
+    SwiftRealtimeVerifier() : llvm::FunctionPass(ID) {}
+  };
+
 } // end namespace swift
 
 #endif

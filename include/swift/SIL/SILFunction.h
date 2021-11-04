@@ -85,6 +85,11 @@ enum class PerformanceConstraints : uint8_t {
   NoAllocation = 1,
   NoLocks = 2,
 };
+enum IsRealtime_t {
+  IsNotRealtime,
+  IsRealtime,
+  IsRealtimeUseGlobalDefault
+};
 
 class SILSpecializeAttr final {
   friend SILFunction;
@@ -420,6 +425,10 @@ private:
   /// from running with pack metadata markers in place.
   unsigned UseStackForPackMetadata : 1;
 
+  /// True if the function should be validated for realtime safety using
+  /// SwiftRealtimeVerifier.
+  unsigned Realtime : 3;
+
   static void
   validateSubclassScope(SubclassScope scope, IsThunk_t isThunk,
                         const GenericSpecializationInformation *genericInfo) {
@@ -457,7 +466,8 @@ private:
               IsDynamicallyReplaceable_t isDynamic,
               IsExactSelfClass_t isExactSelfClass,
               IsDistributed_t isDistributed,
-              IsRuntimeAccessible_t isRuntimeAccessible);
+              IsRuntimeAccessible_t isRuntimeAccessible,
+              IsRealtime_t isRealtime);
 
   static SILFunction *
   create(SILModule &M, SILLinkage linkage, StringRef name,
@@ -473,7 +483,8 @@ private:
          Inline_t inlineStrategy = InlineDefault,
          EffectsKind EffectsKindAttr = EffectsKind::Unspecified,
          SILFunction *InsertBefore = nullptr,
-         const SILDebugScope *DebugScope = nullptr);
+         const SILDebugScope *DebugScope = nullptr,
+         IsRealtime_t isRealtime = IsRealtime_t::IsRealtimeUseGlobalDefault);
 
   void init(SILLinkage Linkage, StringRef Name, CanSILFunctionType LoweredType,
             GenericEnvironment *genericEnv, IsBare_t isBareSILFunction,
@@ -1111,6 +1122,13 @@ public:
   MemoryBehavior getMemoryBehavior(bool observeRetains);
 
   Purpose getSpecialPurpose() const { return specialPurpose; }
+
+  /// \return should the function be validated for realtime safety.
+  IsRealtime_t isRealtime() const { return IsRealtime_t(Realtime); }
+
+  void setRealtime(IsRealtime_t realtime) {
+    Realtime = unsigned(realtime);
+  }
 
   /// Get this function's global_init attribute.
   ///

@@ -1,0 +1,35 @@
+//===--- USwiftRuntimeWhitelist.def - Runtime Functions Database ------*- C++ -*-===//
+//
+// Copyright (c) 2021 Swift for Arduino team
+//
+//===----------------------------------------------------------------------===//
+//
+// This file defines x-macros used for metaprogramming with the set of
+// runtime functions.
+//
+//===----------------------------------------------------------------------===//
+
+/// RUNTIME_WHITELISTED(Name)
+///   Lists Name as one of the functions available in the uSwift runtime.
+///   Whitelisted functions must exist in the uSwift runtime.
+
+///   If a runtime function starts with swift_ and is not whitelisted here
+///   then the compiler will emit an error just before bitcode emission to say the function is not supported.
+
+RUNTIME_WHITELISTED(swift_beginAccess)
+RUNTIME_WHITELISTED(swift_endAccess)
+RUNTIME_WHITELISTED(swift_once)
+
+// non realtime valid (also greylisted)
+RUNTIME_WHITELISTED(swift_slowAlloc)
+RUNTIME_WHITELISTED(swift_slowDealloc)
+
+#define RUNTIME(fn) RUNTIME_WHITELISTED(fn)
+#define FAKE_RUNTIME(fn) 
+// Ignore the symbolic link to the uSwift runtime directory
+// Do not add it to version control, it must be hand linked on each system
+//==============================================================================
+#include "../../../uSwiftRuntime/fake_runtime.def"
+#undef RUNTIME
+#undef FAKE_RUNTIME
+

@@ -525,6 +525,11 @@ diagnoseSync(DiagnosticEngine &Diags, llvm::sys::Mutex *DiagMutex,
     DiagMutex->unlock();
 }
 
+void verifyRuntimeSafety(llvm::Function& F,
+                          DiagnosticEngine &Diags,
+                          llvm::sys::Mutex *DiagMutex,
+                          const IRGenOptions &Opts);
+
 /// Run the LLVM passes. In multi-threaded compilation this will be done for
 /// multiple LLVM modules in parallel.
 bool swift::performLLVM(const IRGenOptions &Opts,
@@ -589,6 +594,13 @@ bool swift::performLLVM(const IRGenOptions &Opts,
 
   performLLVMOptimizations(Opts, Module, TargetMachine,
                            RawOS ? &*RawOS : nullptr);
+
+  // now scan for unsupported runtime use
+  if (!Opts.NoRuntimeVerify) {
+    for (auto I = Module->begin(), E = Module->end(); I != E; ++I)
+      if (!I->isDeclaration())
+        verifyRuntimeSafety(*I,Diags,DiagMutex,Opts);
+  }
 
   if (Stats) {
     if (DiagMutex)

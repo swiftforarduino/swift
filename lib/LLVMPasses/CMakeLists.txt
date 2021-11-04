@@ -7,6 +7,7 @@ add_swift_host_library(swiftLLVMPasses STATIC
   LLVMInlineTree.cpp
   LLVMMergeFunctions.cpp
   DbgAddrBlockSplitter.cpp
+  LLVMSwiftRealtimeVerifier.cpp
 
   LLVM_LINK_COMPONENTS
   analysis

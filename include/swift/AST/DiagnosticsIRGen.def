@@ -62,5 +62,17 @@ ERROR(temporary_allocation_alignment_not_power_of_2,none,
 ERROR(explosion_size_oveflow,none,
       "explosion size too large", ())
 
+WARNING(absent_uswift_runtime,none,
+      "runtime call used that is missing in uSwift, not available on this platform: %0 in %1",
+      (StringRef,StringRef))
+
+WARNING(runtime_violates_realtime_directive,none,
+      "runtime used that violates the realtime context (either compiled with global realtime context or in a @realtime function): %0 in %1",
+      (StringRef,StringRef))
+
+NOTE(runtime_violates_realtime_suggestion,none,
+      "if you need this functionality and do not need hard realtime behaviour here, consider adding a @norealtime directive to the containing function",
+      ())
+
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DefineDiagnosticMacros.h"

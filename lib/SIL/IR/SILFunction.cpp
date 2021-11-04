@@ -105,7 +105,8 @@ SILFunction::create(SILModule &M, SILLinkage linkage, StringRef name,
                     IsThunk_t isThunk,
                     SubclassScope classSubclassScope, Inline_t inlineStrategy,
                     EffectsKind E, SILFunction *insertBefore,
-                    const SILDebugScope *debugScope) {
+                    const SILDebugScope *debugScope,
+                    IsRealtime_t isRealtime) {
   // Get a StringMapEntry for the function.  As a sop to error cases,
   // allow the name to have an empty string.
   llvm::StringMapEntry<SILFunction*> *entry = nullptr;
@@ -131,7 +132,7 @@ SILFunction::create(SILModule &M, SILLinkage linkage, StringRef name,
         M, linkage, name, loweredType, genericEnv, isBareSILFunction, isTrans,
         isSerialized, entryCount, isThunk, classSubclassScope, inlineStrategy,
         E, debugScope, isDynamic, isExactSelfClass, isDistributed,
-        isRuntimeAccessible);
+        isRuntimeAccessible, isRealtime);
   }
   if (entry) entry->setValue(fn);
 
@@ -160,10 +161,10 @@ SILFunction::SILFunction(
     SubclassScope classSubclassScope, Inline_t inlineStrategy, EffectsKind E,
     const SILDebugScope *DebugScope, IsDynamicallyReplaceable_t isDynamic,
     IsExactSelfClass_t isExactSelfClass, IsDistributed_t isDistributed,
-    IsRuntimeAccessible_t isRuntimeAccessible)
+    IsRuntimeAccessible_t isRuntimeAccessible, IsRealtime_t isRealtime)
     : SwiftObjectHeader(functionMetatype), Module(Module),
       index(Module.getNewFunctionIndex()),
-      Availability(AvailabilityContext::alwaysAvailable()) {
+      Availability(AvailabilityContext::alwaysAvailable()), Realtime(unsigned(isRealtime)) {
   init(Linkage, Name, LoweredType, genericEnv, isBareSILFunction, isTrans,
        isSerialized, entryCount, isThunk, classSubclassScope, inlineStrategy, E,
        DebugScope, isDynamic, isExactSelfClass, isDistributed,

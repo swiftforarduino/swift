@@ -248,6 +248,10 @@ def visualc_tools_version : Separate<["-"], "visualc-tools-version">,
          SwiftSymbolGraphExtractOption, SwiftAPIDigesterOption]>,
   HelpText<"VisualC++ ToolSet Version">, MetaVarName<"<version>">;
 
+def realtime : Flag<["-"], "realtime">,
+  Flags<[FrontendOption]>,
+  HelpText<"Run uSwiftRuntime verifier realtime by default. Emitted calls to non realtime runtime will error.">;
+
 // Standard Options
 def _DASH_DASH : Option<["--"], "", KIND_REMAINING_ARGS>,
   Flags<[FrontendOption, DoesNotAffectIncrementalBuild]>;

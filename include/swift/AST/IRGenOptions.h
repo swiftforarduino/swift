@@ -341,6 +341,13 @@ public:
   /// Force public linkage for private symbols. Used only by the LLDB
   /// expression evaluator.
   unsigned ForcePublicLinkage : 1;
+
+  /// Disable the uSwiftRuntime verifier.
+  /// Allow emission of calls to runtime functions that possibly don't exist.
+  unsigned NoRuntimeVerify: 1;
+
+  /// Functions are realtime by default (copied from SIL options).
+  unsigned Realtime: 1;
   
   /// Force lazy initialization of class metadata
   /// Used on Windows to avoid cross-module references.
@@ -497,6 +504,7 @@ public:
         LazyInitializeProtocolConformances(false),
         IndirectAsyncFunctionPointer(false),
         CompactAbsoluteFunctionPointer(false), DisableLegacyTypeInfo(false),
+        NoRuntimeVerify(false), Realtime(false),
         PrespecializeGenericMetadata(false), UseIncrementalLLVMCodeGen(true),
         UseTypeLayoutValueHandling(true), ForceStructTypeLayouts(false),
         EnableLayoutStringValueWitnesses(false),

@@ -726,6 +726,16 @@ DECL_ATTR_KINDS = [
                         OnStruct, OnClass, OnEnum,
                         ABIBreakingToAdd, ABIBreakingToRemove, APIBreakingToAdd, APIBreakingToRemove,  # noqa: E501
                         code=139)
+
+    SimpleDeclAttribute('realtime', 'Realtime',
+                        OnFunc,
+                        ABIStableToAdd, ABIStableToRemove, APIStableToAdd, APIStableToRemove,
+                        code=940)
+
+    SimpleDeclAttribute('norealtime', 'Norealtime',
+                        OnFunc,
+                        ABIStableToAdd, ABIStableToRemove, APIStableToAdd, APIStableToRemove,
+                        code=941)
 ]
 
 # Schema for declaration modifiers:

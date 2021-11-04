@@ -275,6 +275,9 @@ public:
   /// is a single SILModule in a single thread.
   bool checkSILModuleLeaks = false;
 
+  /// Functions are realtime by default.
+  bool Realtime = true;
+
   /// The name of the file to which the backend should save optimization
   /// records.
   std::string OptRecordFile;

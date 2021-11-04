@@ -161,6 +161,8 @@ public:
   IGNORED_ATTR(BackDeployed)
   IGNORED_ATTR(Documentation)
   IGNORED_ATTR(LexicalLifetimes)
+  IGNORED_ATTR(Realtime)
+  IGNORED_ATTR(Norealtime)
 #undef IGNORED_ATTR
 
   void visitAlignmentAttr(AlignmentAttr *attr) {
