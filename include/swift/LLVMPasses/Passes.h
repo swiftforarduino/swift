@@ -103,6 +103,14 @@ namespace swift {
     InlineTreePrinter() : llvm::ModulePass(ID) {}
   };
 
+  class SwiftRealtimeVerifier : public llvm::FunctionPass {
+    virtual void getAnalysisUsage(llvm::AnalysisUsage &AU) const override;
+    virtual bool runOnFunction(llvm::Function &F) override;
+  public:
+    static char ID;
+    SwiftRealtimeVerifier() : llvm::FunctionPass(ID) {}
+  };
+
 } // end namespace swift
 
 #endif

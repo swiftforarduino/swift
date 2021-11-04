@@ -61,6 +61,11 @@ enum IsExactSelfClass_t {
   IsNotExactSelfClass,
   IsExactSelfClass,
 };
+enum IsRealtime_t {
+  IsNotRealtime,
+  IsRealtime,
+  IsRealtimeUseGlobalDefault
+};
 
 class SILSpecializeAttr final {
   friend SILFunction;
@@ -282,6 +287,10 @@ private:
   /// The function's effects attribute.
   unsigned EffectsKindAttr : NumEffectsKindBits;
 
+  /// True if the function should be validated for realtime safety using
+  /// SwiftRealtimeVerifier.
+  unsigned Realtime : 1;
+
   static void
   validateSubclassScope(SubclassScope scope, IsThunk_t isThunk,
                         const GenericSpecializationInformation *genericInfo) {
@@ -318,7 +327,8 @@ private:
               EffectsKind E, SILFunction *insertBefore,
               const SILDebugScope *debugScope,
               IsDynamicallyReplaceable_t isDynamic,
-              IsExactSelfClass_t isExactSelfClass);
+              IsExactSelfClass_t isExactSelfClass,
+              IsRealtime_t isRealtime);
 
   static SILFunction *
   create(SILModule &M, SILLinkage linkage, StringRef name,
@@ -332,7 +342,8 @@ private:
          Inline_t inlineStrategy = InlineDefault,
          EffectsKind EffectsKindAttr = EffectsKind::Unspecified,
          SILFunction *InsertBefore = nullptr,
-         const SILDebugScope *DebugScope = nullptr);
+         const SILDebugScope *DebugScope = nullptr,
+         IsRealtime_t isRealtime = IsRealtime_t::IsRealtimeUseGlobalDefault);
 
   /// Set has ownership to the given value. True means that the function has
   /// ownership, false means it does not.
@@ -817,6 +828,13 @@ public:
   }
   
   Purpose getSpecialPurpose() const { return specialPurpose; }
+
+  /// \return should the function be validated for realtime safety.
+  IsRealtime_t isRealtime() const { return IsRealtime_t(Realtime); }
+
+  void setRealtime(IsRealtime_t realtime) {
+    Realtime = unsigned(realtime);
+  }
 
   /// Get this function's global_init attribute.
   ///

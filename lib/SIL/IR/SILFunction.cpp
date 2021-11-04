@@ -61,7 +61,8 @@ SILFunction::create(SILModule &M, SILLinkage linkage, StringRef name,
                     IsThunk_t isThunk,
                     SubclassScope classSubclassScope, Inline_t inlineStrategy,
                     EffectsKind E, SILFunction *insertBefore,
-                    const SILDebugScope *debugScope) {
+                    const SILDebugScope *debugScope,
+                    IsRealtime_t isRealtime) {
   // Get a StringMapEntry for the function.  As a sop to error cases,
   // allow the name to have an empty string.
   llvm::StringMapEntry<SILFunction*> *entry = nullptr;
@@ -76,7 +77,7 @@ SILFunction::create(SILModule &M, SILLinkage linkage, StringRef name,
                                 isBareSILFunction, isTrans, isSerialized,
                                 entryCount, isThunk, classSubclassScope,
                                 inlineStrategy, E, insertBefore, debugScope,
-                                isDynamic, isExactSelfClass);
+                                isDynamic, isExactSelfClass, isRealtime);
 
   if (entry) entry->setValue(fn);
   return fn;
@@ -93,7 +94,8 @@ SILFunction::SILFunction(SILModule &Module, SILLinkage Linkage, StringRef Name,
                          SILFunction *InsertBefore,
                          const SILDebugScope *DebugScope,
                          IsDynamicallyReplaceable_t isDynamic,
-                         IsExactSelfClass_t isExactSelfClass)
+                         IsExactSelfClass_t isExactSelfClass,
+                         IsRealtime_t isRealtime)
     : Module(Module), Name(Name), LoweredType(LoweredType),
       GenericEnv(genericEnv), SpecializationInfo(nullptr),
       EntryCount(entryCount),
@@ -108,7 +110,7 @@ SILFunction::SILFunction(SILModule &Module, SILLinkage Linkage, StringRef Name,
       Inlined(false), Zombie(false), HasOwnership(true),
       WasDeserializedCanonical(false), IsWithoutActuallyEscapingThunk(false),
       OptMode(unsigned(OptimizationMode::NotSet)),
-      EffectsKindAttr(unsigned(E)) {
+      EffectsKindAttr(unsigned(E)), Realtime(isRealtime) {
   assert(!Transparent || !IsDynamicReplaceable);
   validateSubclassScope(classSubclassScope, isThunk, nullptr);
   setDebugScope(DebugScope);

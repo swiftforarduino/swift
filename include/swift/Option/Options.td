@@ -224,6 +224,10 @@ def parseable_output : Flag<["-"], "parseable-output">,
   Flags<[NoInteractiveOption, DoesNotAffectIncrementalBuild]>,
   HelpText<"Emit textual output in a parseable format">;
 
+def realtime : Flag<["-"], "realtime">,
+  Flags<[FrontendOption]>,
+  HelpText<"Run uSwiftRuntime verifier realtime by default. Emitted calls to non realtime runtime will error.">;
+
 // Standard Options
 def _DASH_DASH : Option<["--"], "", KIND_REMAINING_ARGS>,
   Flags<[FrontendOption, DoesNotAffectIncrementalBuild]>;

@@ -1,0 +1,24 @@
+//===--- USwiftRuntimeGreylist.def - Runtime Functions Database ------*- C++ -*-===//
+//
+// Copyright (c) 2021 Swift for Arduino team
+//
+//===----------------------------------------------------------------------===//
+//
+// This file defines x-macros used for metaprogramming with the set of
+// runtime functions.
+//
+//===----------------------------------------------------------------------===//
+
+/// RUNTIME_GREYLISTED(Name)
+///   Lists Name as one of the functions available in the uSwift runtime.
+///   Greylisted functions must exist in the uSwift runtime but are not realtime safe (e.g. malloc or locking).
+
+///   If a runtime function starts with swift_ and is not listed on the white list
+///   then the compiler will emit an error just before bitcode emission to say the function is not supported.
+
+///   If the function is listed here then it's use in a realtime context causes an error.
+///   Realtime can be enabled for the whole compile by default (disabled per function using @norealtime)
+///   or just enabled per function (when realtime is not enabled for the whole compile) using @realtime.
+
+RUNTIME_GREYLISTED(swift_slowAlloc)
+RUNTIME_GREYLISTED(swift_slowDealloc)

@@ -28,8 +28,11 @@ namespace llvm {
 }
 
 namespace swift {
+  class ASTContext;
+
   llvm::FunctionPass *createSwiftARCOptPass();
   llvm::FunctionPass *createSwiftARCContractPass();
+  llvm::FunctionPass *createSwiftRealtimeVerifierPass();
   llvm::ModulePass *createInlineTreePrinterPass();
   llvm::ModulePass *createSwiftMergeFunctionsPass();
   llvm::ImmutablePass *createSwiftAAWrapperPass();

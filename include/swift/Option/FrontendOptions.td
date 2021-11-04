@@ -571,6 +571,9 @@ def debug_on_sil : Flag<["-"], "gsil">,
   HelpText<"Write the SIL into a file and generate debug-info to debug on SIL "
            " level.">;
 
+def no_runtime_verify : Flag<["-"], "no-runtime-verify">,
+  HelpText<"Disable the uSwiftRuntime verifier. Calls to possibly nonexistent runtime may be emitted.">;
+
 def print_llvm_inline_tree : Flag<["-"], "print-llvm-inline-tree">,
   HelpText<"Print the LLVM inline tree.">;
 

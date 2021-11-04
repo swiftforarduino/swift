@@ -269,6 +269,11 @@ void swift::performLLVMOptimizations(const IRGenOptions &Opts,
     }));
   }
 
+  // Add realtime verification pass.
+  // Not sure if this is the right place.
+  // FunctionPasses.add(createSwiftRealtimeVerifierPass());
+  // [ ** now obsolete ** ]
+
   // Run the function passes.
   FunctionPasses.doInitialization();
   for (auto I = Module->begin(), E = Module->end(); I != E; ++I)
@@ -469,6 +474,11 @@ diagnoseSync(DiagnosticEngine &Diags, llvm::sys::Mutex *DiagMutex,
     DiagMutex->unlock();
 }
 
+void verifyRuntimeSafety(llvm::Function& F,
+                          DiagnosticEngine &Diags,
+                          llvm::sys::Mutex *DiagMutex,
+                          const IRGenOptions &Opts);
+
 /// Run the LLVM passes. In multi-threaded compilation this will be done for
 /// multiple LLVM modules in parallel.
 bool swift::performLLVM(const IRGenOptions &Opts,
@@ -564,6 +574,13 @@ bool swift::performLLVM(const IRGenOptions &Opts,
   }
 
   performLLVMOptimizations(Opts, Module, TargetMachine);
+
+  // now scan for unsupported runtime use
+  if (!Opts.NoRuntimeVerify) {
+    for (auto I = Module->begin(), E = Module->end(); I != E; ++I)
+      if (!I->isDeclaration())
+        verifyRuntimeSafety(*I,Diags,DiagMutex,Opts);
+  }
 
   legacy::PassManager EmitPasses;
 

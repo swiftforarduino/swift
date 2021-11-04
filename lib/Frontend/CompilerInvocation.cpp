@@ -1008,6 +1008,9 @@ static bool ParseSILArgs(SILOptions &Opts, ArgList &Args,
   }
   IRGenOpts.OptMode = Opts.OptMode;
 
+  Opts.Realtime = Args.hasArg(OPT_realtime);
+  IRGenOpts.Realtime = Opts.Realtime;
+
   if (Args.getLastArg(OPT_AssumeSingleThreaded)) {
     Opts.AssumeSingleThreaded = true;
   }
@@ -1303,6 +1306,10 @@ static bool ParseIRGenArgs(IRGenOptions &Opts, ArgList &Args,
   Opts.DisableLLVMSLPVectorizer |= Args.hasArg(OPT_disable_llvm_slp_vectorizer);
   if (Args.hasArg(OPT_disable_llvm_verify))
     Opts.Verify = false;
+
+  if (Args.hasArg(OPT_no_runtime_verify)) {
+    Opts.NoRuntimeVerify = true;
+  }
 
   Opts.EmitStackPromotionChecks |= Args.hasArg(OPT_stack_promotion_checks);
   if (const Arg *A = Args.getLastArg(OPT_stack_promotion_limit)) {
