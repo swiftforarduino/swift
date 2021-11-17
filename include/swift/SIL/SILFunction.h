@@ -289,7 +289,7 @@ private:
 
   /// True if the function should be validated for realtime safety using
   /// SwiftRealtimeVerifier.
-  unsigned Realtime : 1;
+  unsigned Realtime : 3;
 
   static void
   validateSubclassScope(SubclassScope scope, IsThunk_t isThunk,

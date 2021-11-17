@@ -110,7 +110,7 @@ SILFunction::SILFunction(SILModule &Module, SILLinkage Linkage, StringRef Name,
       Inlined(false), Zombie(false), HasOwnership(true),
       WasDeserializedCanonical(false), IsWithoutActuallyEscapingThunk(false),
       OptMode(unsigned(OptimizationMode::NotSet)),
-      EffectsKindAttr(unsigned(E)), Realtime(isRealtime) {
+      EffectsKindAttr(unsigned(E)), Realtime(unsigned(isRealtime)) {
   assert(!Transparent || !IsDynamicReplaceable);
   validateSubclassScope(classSubclassScope, isThunk, nullptr);
   setDebugScope(DebugScope);

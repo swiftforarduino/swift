@@ -1,6 +1,6 @@
-#! /bin/bash -sh
+#! /bin/bash
 
-realpath() {
+function realpath {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }
 
@@ -10,11 +10,11 @@ then
 	exit 1
 fi
 
-LLVM_SOURCE_ROOT=realpath(../llvm-project/llvm)
-SWIFT_BUILD_DIR=(../)
-SWIFT_SOURCE_ROOT=realpath(.)
+LLVM_SOURCE_ROOT=$(realpath "../llvm-project/llvm")
+SWIFT_BUILD_DIR=../
+SWIFT_SOURCE_ROOT=$PWD
 SWIFT_BUILD_DIR=$1
 
-${LLVM_SOURCE_ROOT}/utils/lit/lit.py -sv \
+${LLVM_SOURCE_ROOT}/utils/lit/lit.py \
 --param swift_site_config=${SWIFT_BUILD_DIR}/test-macosx-x86_64/lit.site.cfg \
---param swift-version=5 ${SWIFT_SOURCE_ROOT}/test/AVR/runtime_scanner_attributes.swift
+--param swift-version=5 ${SWIFT_SOURCE_ROOT}/test/AVR
