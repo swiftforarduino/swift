@@ -23,3 +23,13 @@ RUNTIME_WHITELISTED(swift_once)
 // non realtime valid (also greylisted)
 RUNTIME_WHITELISTED(swift_slowAlloc)
 RUNTIME_WHITELISTED(swift_slowDealloc)
+
+#define RUNTIME(fn) RUNTIME_WHITELISTED(fn)
+#define FAKE_RUNTIME(fn) 
+// Ignore the symbolic link to the uSwift runtime directory
+// Do not add it to version control, it must be hand linked on each system
+//==============================================================================
+#include "../../../uSwiftRuntime/fake_runtime.def"
+#undef RUNTIME
+#undef FAKE_RUNTIME
+
