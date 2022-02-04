@@ -1344,7 +1344,7 @@ FUNCTION(GetEnumTagSinglePayloadGeneric,
          ARGS(OpaquePtrTy, Int32Ty, TypeMetadataPtrTy,
               llvm::FunctionType::get(Int32Ty, {OpaquePtrTy, Int32Ty,
                                                 TypeMetadataPtrTy},
-                                      false)->getPointerTo()),
+                                      false)->getPointerTo(DataLayout.getProgramAddressSpace())),
          ATTRS(NoUnwind, ReadOnly, WillReturn),
          EFFECT(NoEffect))
 
@@ -1364,7 +1364,7 @@ FUNCTION(StoreEnumTagSinglePayloadGeneric,
          ARGS(OpaquePtrTy, Int32Ty, Int32Ty, TypeMetadataPtrTy,
               llvm::FunctionType::get(VoidTy, {OpaquePtrTy, Int32Ty, Int32Ty,
                                                TypeMetadataPtrTy},
-                                      false)->getPointerTo()),
+                                      false)->getPointerTo(DataLayout.getProgramAddressSpace())),
          ATTRS(NoUnwind, WillReturn),
          EFFECT(NoEffect))
 
@@ -1600,7 +1600,7 @@ FUNCTION(IsOptionalType,
 //                 void *context);
 FUNCTION(Once, swift_once, C_CC, AlwaysAvailable,
          RETURNS(VoidTy),
-         ARGS(OnceTy->getPointerTo(), Int8PtrTy, Int8PtrTy),
+         ARGS(OnceTy->getPointerTo(), Int8ProgramSpacePtrTy, Int8PtrTy),
          ATTRS(NoUnwind),
          EFFECT(Locking))
 
