@@ -1386,7 +1386,7 @@ public:
               IGM.getDeletedMethodErrorFn(), IGM.FunctionPtrTy);
         }
       }
-      witness = llvm::ConstantExpr::getBitCast(witness, IGM.Int8PtrTy);
+      witness = llvm::ConstantExpr::getPointerBitCastOrAddrSpaceCast(witness, IGM.Int8PtrTy);
 
       PointerAuthSchema schema =
           isAsyncRequirement
