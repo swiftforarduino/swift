@@ -607,9 +607,9 @@ public:
     llvm::PointerType *Int8PtrTy;      /// i8*
     llvm::PointerType *WitnessTableTy;
     llvm::PointerType *ObjCSELTy;
-    llvm::PointerType *FunctionPtrTy;
     llvm::PointerType *CaptureDescriptorPtrTy;
   };
+  llvm::PointerType *FunctionPtrTy;
   union {
     llvm::PointerType *Int8PtrPtrTy;   /// i8**
     llvm::PointerType *WitnessTablePtrTy;

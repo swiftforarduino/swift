@@ -285,7 +285,7 @@ namespace {
 
     /// Add a pointer to the given type as the next parameter.
     void addPointerParameter(llvm::Type *storageType) {
-      ParamIRTypes.push_back(storageType->getPointerTo());
+      ParamIRTypes.push_back(storageType->getPointerTo(storageType->getPointerAddressSpace()));
     }
 
     void addCoroutineContextParameter();
