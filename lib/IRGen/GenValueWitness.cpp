@@ -1007,7 +1007,7 @@ addValueWitness(IRGenModule &IGM, ConstantStructBuilder &B, ValueWitness index,
                 const llvm::Optional<BoundGenericTypeCharacteristics>
                     boundGenericCharacteristics = llvm::None) {
   auto addFunction = [&](llvm::Constant *fn) {
-    fn = llvm::ConstantExpr::getBitCast(fn, IGM.Int8PtrTy);
+    fn = llvm::ConstantExpr::getPointerBitCastOrAddrSpaceCast(fn, IGM.Int8PtrTy);
     B.addSignedPointer(fn, IGM.getOptions().PointerAuth.ValueWitnesses, index);
   };
 
