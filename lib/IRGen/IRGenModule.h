@@ -609,7 +609,10 @@ public:
     llvm::PointerType *ObjCSELTy;
     llvm::PointerType *CaptureDescriptorPtrTy;
   };
-  llvm::PointerType *FunctionPtrTy;
+  union {
+    llvm::PointerType *FunctionPtrTy;
+    llvm::PointerType *Int8ProgramSpacePtrTy; /// i8* in same address space as programs
+  };
   union {
     llvm::PointerType *Int8PtrPtrTy;   /// i8**
     llvm::PointerType *WitnessTablePtrTy;
