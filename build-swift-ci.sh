@@ -2,7 +2,7 @@
 
 if [[ "$1" == "debug" ]]
 then
-  BUILD_SUBDIR=Ninja-ReleaseAssert+DebugSwift
+  BUILD_SUBDIR=Ninja-ReleaseAssert+swift-DebugAssert
 else
   BUILD_SUBDIR=Ninja-ReleaseAssert
 fi
