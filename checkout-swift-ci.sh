@@ -1,0 +1,19 @@
+#! /usr/bin/arch -arch x86_64 /bin/bash -x
+
+PATH=$PATH:/Applications/CMake.app/Contents/bin
+
+git clone --depth=1 -b release/5.3 https://github.com/apple/swift-cmark.git cmark
+git clone --depth=1 -b avr-swift-progmem-addrspace-1 git@github.com:swiftforarduino/llvm-project.git llvm-project
+git clone --depth=1 -b avr-support-8 git@github.com:swiftforarduino/swift.git swift
+git clone --depth=1 -b arc git@github.com:swiftforarduino/AVR2.git AVR2
+
+ln -s llvm-project/clang clang
+ln -s llvm-project/llvm llvm
+
+cd swift
+
+ln -s ../AVR2/uSwift/Runtime uSwiftRuntime
+
+utils/build-script -R -S --clean ${DEBUG_SWIFT_OPT} --extra-cmake-options="-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=AVR"  --extra-cmake-options="-DLLVM_ENABLE_PROJECTS='clang'"
+
+echo "** COMPLETED SWIFT CHECKOUT SOURCES AND CONFIGURATION **"
