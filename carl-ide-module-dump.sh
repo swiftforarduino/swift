@@ -1,0 +1,3 @@
+#! /bin/bash
+
+bin/swift-ide-test -print-module  -module-to-print=halcore -I=/Users/carlpeto/Documents/Code/HAL/bin -source-filename=I2C.swift -I "/Applications/Swift For Arduino 5.0.1.app/Contents/XPCServices/BuildEngine.xpc/Contents/Resources/uSwift-AVR" -I "/Applications/Swift For Arduino 5.0.1.app/Contents/XPCServices/BuildEngine.xpc/Contents/Resources/uSwiftShims" --target=avr-atmel-linux-gnueabihf -I "/Applications/Swift For Arduino 5.0.1.app/Contents/XPCServices/BuildEngine.xpc/Contents/Resources/gpl-tools-avr/lib/avr-libgcc/include" -I "/Applications/Swift For Arduino 5.0.1.app/Contents/XPCServices/BuildEngine.xpc/Contents/Resources/gpl-tools-avr/lib/avr-libc/include" -Xcc -DAVR_LIBC_DEFINED -Xcc -DLIBC_DEFINED
