@@ -825,7 +825,7 @@ static void addValueWitness(IRGenModule &IGM,
                             SILType concreteType,
                             const TypeInfo &concreteTI) {
   auto addFunction = [&](llvm::Constant *fn) {
-    fn = llvm::ConstantExpr::getBitCast(fn, IGM.Int8PtrTy);
+    fn = llvm::ConstantExpr::getAddrSpaceCast(fn, IGM.Int8PtrTy);
     B.addSignedPointer(fn, IGM.getOptions().PointerAuth.ValueWitnesses, index);
   };
 

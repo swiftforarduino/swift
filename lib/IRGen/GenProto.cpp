@@ -1332,7 +1332,7 @@ public:
         // It should be never called. We add a pointer to an error function.
         witness = IGM.getDeletedMethodErrorFn();
       }
-      witness = llvm::ConstantExpr::getBitCast(witness, IGM.Int8PtrTy);
+      witness = llvm::ConstantExpr::getAddrSpaceCast(witness, IGM.Int8PtrTy);
 
       auto &schema = IGM.getOptions().PointerAuth.ProtocolWitnesses;
       Table.addSignedPointer(witness, schema, requirement);
