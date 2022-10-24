@@ -359,7 +359,7 @@ IRGenModule::IRGenModule(IRGenerator &irgen,
   FullTypeMetadataPtrTy = FullTypeMetadataStructTy->getPointerTo(DefaultAS);
 
   DeallocatingDtorTy = llvm::FunctionType::get(VoidTy, RefCountedPtrTy, false);
-  llvm::Type *dtorPtrTy = DeallocatingDtorTy->getPointerTo();
+  llvm::Type *dtorPtrTy = DeallocatingDtorTy->getPointerTo(DataLayout.getProgramAddressSpace());
 
   // A full heap metadata is basically just an additional small prefix
   // on a full metadata, used for metadata corresponding to heap

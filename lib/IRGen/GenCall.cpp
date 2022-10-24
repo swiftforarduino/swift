@@ -1625,7 +1625,7 @@ llvm::CallSite CallEmission::emitCallSite() {
     auto origCallee = call->getCalledValue();
     llvm::Value *opaqueCallee = origCallee;
     opaqueCallee =
-      IGF.Builder.CreateBitCast(opaqueCallee, IGF.IGM.Int8PtrTy);
+      IGF.Builder.CreateBitCast(opaqueCallee, IGF.IGM.Int8ProgramSpacePtrTy);
     opaqueCallee = IGF.Builder.CreateIntrinsicCall(
         llvm::Intrinsic::coro_prepare_retcon, {opaqueCallee});
     opaqueCallee =

@@ -1189,7 +1189,7 @@ FUNCTION(IsOptionalType,
 //                 void *context);
 FUNCTION(Once, swift_once, C_CC, AlwaysAvailable,
          RETURNS(VoidTy),
-         ARGS(OnceTy->getPointerTo(), Int8PtrTy, Int8PtrTy),
+         ARGS(OnceTy->getPointerTo(), Int8ProgramSpacePtrTy, Int8PtrTy),
          ATTRS(NoUnwind))
 
 // void swift_registerProtocols(const ProtocolRecord *begin,
