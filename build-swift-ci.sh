@@ -1,4 +1,4 @@
-#! /bin/bash -x
+#! /bin/bash -ex
 
 if [[ "$1" == "debug" ]]
 then
