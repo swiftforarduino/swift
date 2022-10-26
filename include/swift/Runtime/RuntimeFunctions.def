@@ -968,7 +968,7 @@ FUNCTION(GetEnumTagSinglePayloadGeneric,
          ARGS(OpaquePtrTy, Int32Ty, TypeMetadataPtrTy,
               llvm::FunctionType::get(Int32Ty, {OpaquePtrTy, Int32Ty,
                                                 TypeMetadataPtrTy},
-                                      false)->getPointerTo()),
+                                      false)->getPointerTo(DataLayout.getProgramAddressSpace())),
          ATTRS(NoUnwind, ReadOnly))
 
 
@@ -987,7 +987,7 @@ FUNCTION(StoreEnumTagSinglePayloadGeneric,
          ARGS(OpaquePtrTy, Int32Ty, Int32Ty, TypeMetadataPtrTy,
               llvm::FunctionType::get(VoidTy, {OpaquePtrTy, Int32Ty, Int32Ty,
                                                TypeMetadataPtrTy},
-                                      false)->getPointerTo()),
+                                      false)->getPointerTo(DataLayout.getProgramAddressSpace())),
          ATTRS(NoUnwind))
 
 // void swift_storeEnumTagMultiPayload(opaque_t *obj, Metadata *enumTy,
