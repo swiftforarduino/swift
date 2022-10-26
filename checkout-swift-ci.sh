@@ -9,14 +9,13 @@ git clone --depth=1 -b arc git@github.com:swiftforarduino/AVR2.git AVR2
 if [[ "${CI_SERVER}" == "" ]]
 then
   git clone --depth=1 -b avr-support-8 git@github.com:swiftforarduino/swift.git swift
+  ln -s ../AVR2/uSwift/Runtime uSwiftRuntime
 fi
 
 ln -s llvm-project/clang clang
 ln -s llvm-project/llvm llvm
 
 cd swift
-
-ln -s ../AVR2/uSwift/Runtime uSwiftRuntime
 
 if [[ "$1" == "debug" ]]
 then
