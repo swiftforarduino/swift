@@ -11,7 +11,7 @@ then
   git clone --depth=1 -b avr-support-8 git@github.com:swiftforarduino/swift.git swift
 fi
 
-ln -s AVR2/uSwift/Runtime swift/uSwiftRuntime
+ln -s ../AVR2/uSwift/Runtime swift/uSwiftRuntime
 
 ln -s llvm-project/clang clang
 ln -s llvm-project/llvm llvm
