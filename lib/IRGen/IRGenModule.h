@@ -1346,7 +1346,7 @@ public:
   llvm::Constant *getBool(bool condition);
 
   /// Cast the given constant to i8*.
-  llvm::Constant *getOpaquePtr(llvm::Constant *pointer);
+  llvm::Constant *getOpaquePtrToFn(llvm::Constant *fnPointer);
 
   llvm::Function *getAddrOfDispatchThunk(SILDeclRef declRef,
                                          ForDefinition_t forDefinition);

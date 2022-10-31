@@ -1086,8 +1086,8 @@ llvm::ConstantInt *IRGenModule::getSize(Size size) {
   return llvm::ConstantInt::get(SizeTy, size.getValue());
 }
 
-llvm::Constant *IRGenModule::getOpaquePtr(llvm::Constant *ptr) {
-  return llvm::ConstantExpr::getAddrSpaceCast(ptr, Int8PtrTy);
+llvm::Constant *IRGenModule::getOpaquePtrToFn(llvm::Constant *fnptr) {
+  return llvm::ConstantExpr::getAddrSpaceCast(fnptr, Int8PtrTy);
 }
 
 static void appendEncodedName(raw_ostream &os, StringRef name) {

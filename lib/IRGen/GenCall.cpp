@@ -2603,11 +2603,11 @@ static void emitRetconCoroutineEntry(IRGenFunction &IGF,
                                      Size bufferSize,
                                      Alignment bufferAlignment) {
   auto prototype =
-    IGF.IGM.getOpaquePtr(IGF.IGM.getAddrOfContinuationPrototype(fnType));
+    IGF.IGM.getOpaquePtrToFn(IGF.IGM.getAddrOfContinuationPrototype(fnType));
 
   // Use malloc and free as our allocator.
-  auto allocFn = IGF.IGM.getOpaquePtr(IGF.IGM.getMallocFn());
-  auto deallocFn = IGF.IGM.getOpaquePtr(IGF.IGM.getFreeFn());
+  auto allocFn = IGF.IGM.getOpaquePtrToFn(IGF.IGM.getMallocFn());
+  auto deallocFn = IGF.IGM.getOpaquePtrToFn(IGF.IGM.getFreeFn());
 
   // Call the right 'llvm.coro.id.retcon' variant.
   llvm::Value *buffer = allParamValues.claimNext();
