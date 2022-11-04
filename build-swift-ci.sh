@@ -1,10 +1,15 @@
 #! /bin/bash -ex
 
-if [[ "$1" == "debug" ]]
+if [[ "$1" == "fulldebug" ]]
 then
-  BUILD_SUBDIR=Ninja-ReleaseAssert+swift-DebugAssert
+  BUILD_SUBDIR=Ninja-DebugAssert
 else
-  BUILD_SUBDIR=Ninja-ReleaseAssert
+  if [[ "$1" == "debug" ]]
+  then
+    BUILD_SUBDIR=Ninja-ReleaseAssert+swift-DebugAssert
+  else
+    BUILD_SUBDIR=Ninja-ReleaseAssert
+  fi
 fi
 
 PLATFORM=macosx

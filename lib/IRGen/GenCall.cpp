@@ -1625,11 +1625,11 @@ llvm::CallSite CallEmission::emitCallSite() {
     auto origCallee = call->getCalledValue();
     llvm::Value *opaqueCallee = origCallee;
     opaqueCallee =
-      IGF.Builder.CreateBitCast(opaqueCallee, IGF.IGM.Int8ProgramSpacePtrTy);
+      IGF.Builder.CreatePointerBitCastOrAddrSpaceCast(opaqueCallee, IGF.IGM.Int8PtrTy);
     opaqueCallee = IGF.Builder.CreateIntrinsicCall(
         llvm::Intrinsic::coro_prepare_retcon, {opaqueCallee});
     opaqueCallee =
-      IGF.Builder.CreateBitCast(opaqueCallee, origCallee->getType());
+      IGF.Builder.CreatePointerBitCastOrAddrSpaceCast(opaqueCallee, origCallee->getType());
     call->setCalledFunction(fn.getFunctionType(), opaqueCallee);
 
     // Reset the insert point to after the call.
