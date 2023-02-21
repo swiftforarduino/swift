@@ -286,9 +286,8 @@ namespace {
     /// Add a pointer to the given type as the next parameter.
     void addPointerParameter(llvm::Type *storageType) {
       if (isa<llvm::FunctionType>(storageType)) {
-        // this is a temporary hack, we should read the program data space
-        // from the target data layout
-        ParamIRTypes.push_back(storageType->getPointerTo(1));
+        // read the program data space from the target data layout
+        ParamIRTypes.push_back(storageType->getPointerTo(IGM.DataLayout.getProgramAddressSpace()));
       } else {
         ParamIRTypes.push_back(storageType->getPointerTo());
       }
