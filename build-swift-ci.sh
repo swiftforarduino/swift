@@ -25,6 +25,7 @@ ninja
 popd
 pushd swift-${PLATFORM}-${ARCH}
 ninja swift
+ninja swift-ide-test
 popd
 
 echo "** COMPLETED SWIFT COMPILER BUILD **"
