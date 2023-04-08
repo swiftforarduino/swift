@@ -375,7 +375,7 @@ enum class TokenTypeCastKind {
 
 static TokenTypeCastKind tokenHasTypeCast(
   clang::Sema& sema,
-  const clang::MacroInfo::tokens_iterator &tokenI,
+  const clang::MacroInfo::const_tokens_iterator &tokenI,
   unsigned numTokens) {
 
   if (numTokens > 3 &&

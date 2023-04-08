@@ -725,17 +725,17 @@ DECL_ATTR_KINDS = [
     SimpleDeclAttribute('runtimeMetadata', 'RuntimeMetadata',
                         OnStruct, OnClass, OnEnum,
                         ABIBreakingToAdd, ABIBreakingToRemove, APIBreakingToAdd, APIBreakingToRemove,  # noqa: E501
-                        code=139)
+                        code=139),
 
     SimpleDeclAttribute('realtime', 'Realtime',
                         OnFunc,
                         ABIStableToAdd, ABIStableToRemove, APIStableToAdd, APIStableToRemove,
-                        code=940)
+                        code=140),
 
     SimpleDeclAttribute('norealtime', 'Norealtime',
                         OnFunc,
                         ABIStableToAdd, ABIStableToRemove, APIStableToAdd, APIStableToRemove,
-                        code=941)
+                        code=141)
 ]
 
 # Schema for declaration modifiers:
