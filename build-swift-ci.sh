@@ -24,7 +24,7 @@ pushd llvm-${PLATFORM}-${ARCH}
 ninja
 popd
 pushd swift-${PLATFORM}-${ARCH}
-ninja swift
+ninja swift-frontend
 ninja swift-ide-test
 popd
 
