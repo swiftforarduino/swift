@@ -27,7 +27,8 @@ fi
 
 # utils/build-script -R -S --clean ${DEBUG_SWIFT_OPT} --extra-cmake-options="-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=AVR"  --extra-cmake-options="-DLLVM_ENABLE_PROJECTS='clang'"
 
-utils/build-script -R -S --clean ${DEBUG_SWIFT_OPT} --extra-cmake-options="-DLLVM_TARGETS_TO_BUILD=AVR"  --extra-cmake-options="-DLLVM_ENABLE_PROJECTS='clang'" \
---skip-build-benchmarks --skip-ios --skip-watchos --skip-tvos --swift-darwin-supported-archs "$(uname -m)" --swift-disable-dead-stripping --skip-early-swiftsyntax --bootstrapping=off
+utils/build-script -R -S --clean ${DEBUG_SWIFT_OPT} --extra-cmake-options="-DLLVM_TARGETS_TO_BUILD=AVR;ARM"  --extra-cmake-options="-DLLVM_ENABLE_PROJECTS='clang'" \
+--skip-build-benchmarks --skip-ios --skip-watchos --skip-tvos --darwin-deployment-version-osx 10.15 --swift-disable-dead-stripping --skip-early-swiftsyntax --bootstrapping=off
+# --swift-darwin-supported-archs "$(uname -m)"
 
 echo "** COMPLETED SWIFT CHECKOUT SOURCES AND CONFIGURATION **"
