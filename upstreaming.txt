@@ -1,0 +1,180 @@
+Things to upstream...
+
+FROM:
+0c51fa45f134f22f22f1b44ed1e4bd679d6be50e
+emit string constants to program memory
+Lib/IRGen/IRGenModule.h
+Lib/IRGen/IRGenModule.cpp
+Lib/IRGen/GenDecl.cpp
+Lib/IRGen/GenConstant.cpp
+
+STATUS: not for public use, do not upstream
+
+
+Fixes:
+- patch to make emitted call code for calling _unimplementedInitializer within base class vtables match the version of my function in my stdlib
+Lib/Sema/CodeSynthesis.cpp ?
+STATUS: commented out, do not upstream
+
+
+- patch to fix occasional crashes in getTypeOfMemberReference
+- attempt to fix crash on constraints building stdlib
+Lib/Sema/ConstraintSystem.cpp ? Still needed?
+Lib/Sema/CSSimplify.cpp ? Still needed?
+Lib/SILOptimizer/Transforms/DeadObjectElimination.cpp ? Still needed?
+
+STATUS: possibly obsolete - check if still necessary, keep the branch until we are sure it's obsolete, do not upstream
+
+
+- make classes compatible with 16 bit pointer targets
+Lib/IRGen/ExtraInhabitants.cpp
+Lib/IRGen/GenClass.cpp
+
+STATUS: *** CANDIDATE FOR UPSTREAMING ***
+
+
+- patch to report a meaningful error if the Error protocol is missing and might be needed due to a rethrows clause on a function
+DiagnosticsSema.def
+TypeCheckAttr.cpp
+
+STATUS: obsolete for us but might be helpful for some... we implemented the Error protocol in our stdlib! Ask on Swift Forums if this sort of niche fix is useful.
+
+
+
+
+
+FROM:
+d890f20be7ba145bbfa578ccd80a4d0aa3fb31e6
+fix simple errors and warnings from merge issues or bit rot
+Lib/Basic/LangOptions.cpp
+Lib/Sema/TypeCheckAttr.cpp
+Utils/build-script-impl
+
+No relevant files
+
+STATUS: nothing to upstream
+
+
+
+FROM:
+49c44e2f54ab4a3250f239db454fbc7064f93379
+
+Nothing in this commit, comment only.
+
+
+
+
+
+FROM:
+a8c12753a062d1e78c7ee853d184a891f61dcebd
+patches:
+- allow import of #define constants that are cast to (_Bool) or (unsigned XXX) [_Bool support requires llvm/clang patch to work]
+Lib/ClangImporter/ImportMacro.cpp
+
+STATUS: *** CANDIDATE FOR UPSTREAMING ***
+
+
+
+
+
+FROM:
+f241232bea8a118bfc7b8b6787b2cfd05aeb3bb6
+
+Nothing - private S4A code
+
+STATUS: nothing to upstream
+
+
+
+FROM:
+a592becd1e71a8fbeb67e0ecff6b0e88aca621ac
+
+AVR support - not likely to be of interest to the community
+
+
+STATUS: mention it to swift forums but probably unlikely for upstreaming
+
+
+
+
+
+FROM:
+faa00716082373fe67f5f9fc08636ec97409b078
+fix crashes in emitting calls to get metadata from mangled name
+Lib/IRGen/Linking.cpp
+Lib/IRGen/MetadataRequest.cpp
+
+STATUS: *** candidate for upstreaming ***
+
+
+
+
+
+
+FROM:
+276b2f63e9c3c4d827b29fa9b61a41128d131bc6
+- basic pass scanning bitcode for runtime calls if @realtime attribute is present
+
+- add whitelist/greylist
+
+- add options to enable global realtime function scanning and to disable runtime scans altogether
+- improve line number extraction for inline code in some cases
+
+- make @norealtime override a -realtime global context
+- fix compiler warning
+
+- change realtime errors to warnings
+
+- Create AVR specific test suite, including swift and llvm IR tests of
+runtime validation and realtime attributes and validation (whitelist,
+greylist, blacklist) and command line control switches
+- include tests for runtime attributes to check they lower into LLVM correctly
+(note: at the time of writing, this test is breaking, because the underlying code needs a fix, checking in as-is, intending to red-green-refactor)
+- add a sample script to run unit tests for when I've forgotten how in 6 months time
+
+
+STATUS: S4A only feature, not suitable for upstreaming
+
+
+
+
+
+FROM:
+9f9be7b50001c8af0678c6bce7fd7b4bd2e2da29
+This works in conjunction with github.com/swiftforarduino/llvm-project branch avr-swift-progmem-addrspace-1 (currently at commit 4419b03ade2a).
+
+It updates Swift, at least partially, to be aware of address spaces for functions.
+
+for closures, allow round trip via opaque ptr in pgmspace
+
+- Fix for mapping program space functions into protocol witness tables and value witness tables
+- Fixed in SIL function lowering, addPointerParameter should only create pointers in address space 1 when the parameter is a function (e.g. working with closures).
+
+fix coroutine/yield emission
+
+more program address space fixes
+
+addrsp
+
+minor rename
+
+- fix pointer wrangling between address spaces (or not) in coroutine emission
+- add a variant build script for mac mini server
+
+- fix pointer parameter wrangling between namespaces in call site emission
+
+try making something that will work with ARM and AVR, generalised
+
+
+STATUS: many fixes to make program address space work, ask on forums if they're of interest to the wider community or if it's just "noise", given that AVR is the only platform that implements this feature
+
+
+
+
+
+
+FROM:
+872089ba4992fc5aff66e456b9ae64859276fee4
+get swift compiling after 5.8 release, update/rebase our work onto it, update CI script
+
+STATUS: these will need to be applied into previous commits and merged, they make 5.8 work, anything that's upstreamed will need this too
