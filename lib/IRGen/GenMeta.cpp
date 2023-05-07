@@ -1153,7 +1153,7 @@ namespace {
       auto var = cast<llvm::GlobalVariable>(addr);
       
       var->setConstant(true);
-      IGM.setTrueConstGlobal(var);
+      // IGM.setTrueConstGlobal(var);
       return var;
     }
 
