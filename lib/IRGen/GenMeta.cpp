@@ -119,7 +119,9 @@ void IRGenModule::setTrueConstGlobal(llvm::GlobalVariable *var) {
     break;
   case llvm::Triple::ELF:
   case llvm::Triple::Wasm:
-    var->setSection(".rodata");
+      // if (!suppressSpecialSections) {
+  //   var->setSection(".rodata");
+  // }
     break;
   case llvm::Triple::XCOFF:
   case llvm::Triple::COFF:
@@ -1153,7 +1155,7 @@ namespace {
       auto var = cast<llvm::GlobalVariable>(addr);
       
       var->setConstant(true);
-      IGM.setTrueConstGlobal(var);
+      // IGM.setTrueConstGlobal(var);
       return var;
     }
 
