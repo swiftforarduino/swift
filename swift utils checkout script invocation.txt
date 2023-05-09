@@ -1,0 +1,89 @@
+utils/update-checkout --clone-with-ssh --scheme release/5.8 --skip-repository swift-installer-scripts --skip-repository swift-nio --skip-repository swift-nio-ssl --skip-repository swift-lmdb --skip-repository swift-docc --skip-repository swift-docc-render-artifact --skip-repository swift-docc-symbolkit --skip-repository swift-markdown --skip-repository swift-experimental-string-processing --skip-repository swift-llvm-bindings --skip-repository swift-xcode-playground-support --skip-repository swift-integration-tests --skip-repository swift-corelibs-libdispatch --skip-repository swift-corelibs-foundation --skip-repository swift-corelibs-xctest --skip-repository swift-stress-tester --skip-repository swift-system --skip-repository swift-driver --skip-repository swift-crypto --skip-repository swift-atomics --skip-repository swift-argument-parser 
+utils/update-checkout --clone-with-ssh --scheme release/5.8 --skip-repository swift-installer-scripts --skip-repository swift-nio --skip-repository swift-nio-ssh --skip-repository swift-lmdb --skip-repository swift-docc --skip-repository swift-docc-render-artifact --skip-repository swift-docc-symbolkit --skip-repository swift-markdown --skip-repository swift-experimental-string-processing --skip-repository swift-llvm-bindings --skip-repository swift-xcode-playground-support --skip-repository swift-integration-tests --skip-repository swift-corelibs-libdispatch --skip-repository swift-corelibs-foundation --skip-repository swift-corelibs-xctest --skip-repository swift-stress-tester --skip-repository swift-system --skip-repository swift-driver --skip-repository swift-crypto --skip-repository swift-atomics --skip-repository swift-argument-parser
+
+
+utils/build-script --clean --Xcode -R -S -extra-cmake-options="-DLLVM_TARGETS_TO_BUILD=AVR -DLLVM_ENABLE_BACKTRACES=Off" --skip-build-benchmarks \
+       --skip-ios --skip-watchos --skip-tvos --swift-darwin-supported-archs "$(uname -m)" \
+       --sccache --swift-disable-dead-stripping
+
+
+
+...old style...
+utils/build-script --clean --Xcode -R -S -extra-cmake-options="-DLLVM_TARGETS_TO_BUILD=AVR -DLLVM_ENABLE_BACKTRACES=Off" --skip-build-benchmarks \
+       --skip-ios --skip-watchos --skip-tvos --swift-darwin-supported-archs "$(uname -m)" \
+       --sccache --swift-disable-dead-stripping
+
+Not needed any more as llvm now has AVR as a supported target
+
+Start with a simple, macOS only build...
+
+
+utils/build-script --clean --xcode -R -S --skip-build-benchmarks --skip-ios --skip-watchos --skip-tvos --swift-darwin-supported-archs "$(uname -m)" --swift-disable-dead-stripping
+
+
+... if that works, rebase in our patches and try something like...
+
+utils/build-script --clean --xcode -R -S --skip-build-benchmarks --skip-ios --skip-watchos --skip-tvos --swift-darwin-supported-archs "$(uname -m)" --swift-disable-dead-stripping -extra-cmake-options="-DLLVM_TARGETS_TO_BUILD=AVR,-DLLVM_ENABLE_BACKTRACES=Off"
+
+
+
+
+
+
+
+
+The regular build failed to configure...
+utils/build-script --clean -R -S --skip-build-benchmarks --skip-ios --skip-watchos --skip-tvos --swift-darwin-supported-archs "$(uname -m)" --swift-disable-dead-stripping
+
+
+Attempting to add checkouts for...
+Cloning 'swift-integration-tests'
+Cloning 'swift-driver'
+Cloning 'swift-installer-scripts'
+
+
+utils/update-checkout --clone-with-ssh --scheme release/5.8 --skip-repository swift-nio --skip-repository swift-nio-ssh --skip-repository swift-lmdb --skip-repository swift-docc --skip-repository swift-docc-render-artifact --skip-repository swift-docc-symbolkit --skip-repository swift-markdown --skip-repository swift-experimental-string-processing --skip-repository swift-llvm-bindings --skip-repository swift-xcode-playground-support --skip-repository swift-corelibs-libdispatch --skip-repository swift-corelibs-foundation --skip-repository swift-corelibs-xctest --skip-repository swift-stress-tester --skip-repository swift-system  --skip-repository swift-crypto --skip-repository swift-atomics --skip-repository swift-argument-parser
+
+
+Now fails due to...
+CMake Error: The source directory "/Users/petoc01/Documents/Code/swift/swift-system" does not exist.
+
+utils/update-checkout --clone-with-ssh --scheme release/5.8 --skip-repository swift-nio --skip-repository swift-nio-ssh --skip-repository swift-lmdb --skip-repository swift-docc --skip-repository swift-docc-render-artifact --skip-repository swift-docc-symbolkit --skip-repository swift-markdown --skip-repository swift-experimental-string-processing --skip-repository swift-llvm-bindings --skip-repository swift-xcode-playground-support --skip-repository swift-corelibs-libdispatch --skip-repository swift-corelibs-foundation --skip-repository swift-corelibs-xctest --skip-repository swift-stress-tester --skip-repository swift-crypto --skip-repository swift-atomics --skip-repository swift-argument-parser
+
+CMake Error: The source directory "/Users/petoc01/Documents/Code/swift/swift-argument-parser" does not exist.
+
+
+
+
+^^ worked on a conventional (ninja) configure.
+
+
+
+
+
+
+
+But broke on Xcode configure...
+
+CMake Error in lib/Parse/CMakeLists.txt:
+  Imported target "SwiftSyntax::SwiftBasicFormat" includes non-existent path
+
+    "/Users/petoc01/Documents/Code/swift/build/Xcode-ReleaseAssert/earlyswiftsyntax-macosx-x86_64/lib/swift/host"
+
+
+This post says we need to update the build script invocation...
+https://github.com/apple/swift/issues/62645
+
+
+utils/build-script --clean -R -S --skip-build-benchmarks --skip-ios --skip-watchos --skip-tvos --swift-darwin-supported-archs "$(uname -m)" --swift-disable-dead-stripping --xcode --skip-early-swiftsyntax
+
+
+...probably want to get rid of the daft swift driver...
+
+utils/build-script --clean -R -S --skip-build-benchmarks --skip-ios --skip-watchos --skip-tvos --swift-darwin-supported-archs "$(uname -m)" --swift-disable-dead-stripping --xcode --skip-early-swiftsyntax --bootstrapping=off
+
+Ninja (normal) build...
+
+utils/build-script --clean -R -S --skip-build-benchmarks --skip-ios --skip-watchos --skip-tvos --swift-darwin-supported-archs "$(uname -m)" --swift-disable-dead-stripping --skip-early-swiftsyntax --bootstrapping=off
+
+
