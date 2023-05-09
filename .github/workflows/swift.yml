@@ -21,11 +21,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Checkout
-      run: swift/checkout-swift-ci.sh
+      run: checkout-swift-ci.sh
     - name: Build
-      run: swift/build-swift-ci.sh
+      run: build-swift-ci.sh
     - name: Archive Built Products
       uses: actions/upload-artifact@v3
       with:
         name: binary directory
-        path: build/Ninja-ReleaseAssert/swift-macosx-x86_64/bin/
+        path: ../build/Ninja-ReleaseAssert/swift-macosx-x86_64/bin/
