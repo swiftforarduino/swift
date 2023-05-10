@@ -23,9 +23,13 @@ jobs:
     - name: List
       run: ls
     - name: Checkout
-      run: ./checkout-swift-ci.sh
+      run: |
+        cd ..
+        swift/checkout-swift-ci.sh
     - name: Build
-      run: ./build-swift-ci.sh
+      run: |
+        cd ..
+        swift/build-swift-ci.sh
     - name: Archive Built Products
       uses: actions/upload-artifact@v3
       with:
