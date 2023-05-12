@@ -41,4 +41,10 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: binary directory
-        path: build/Ninja-ReleaseAssert/swift-macosx-x86_64/bin/
+        path: |
+          bin/
+          swift/bin/
+          build/Ninja-ReleaseAssert/swift-macosx-x86_64/bin/
+          swift/bin/**
+          bin/**
+          
