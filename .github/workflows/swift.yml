@@ -1,0 +1,47 @@
+name: Swift
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "avr-support-11" ]
+  pull_request:
+    branches: [ "avr-support-11" ]
+
+env:
+  CI_SERVER: 1
+  DEVELOPER_DIR: "/Applications/Xcode-13.2.1.app/Contents/Developer"
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    defaults:
+      run:
+        working-directory: ..
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: List
+      run: ls
+
+    - name: Checkout
+      run: |
+        swift/checkout-swift-ci.sh
+
+    - name: Build
+      run: |
+        swift/build-swift-ci.sh
+
+    - name: Duplicate Archives
+      run: |
+        cp -a build/Ninja-ReleaseAssert/swift-macosx-x86_64/bin swift/
+
+    - name: Archive Built Products
+      uses: actions/upload-artifact@v3
+      if: ${{ github.event_name == 'push' }}
+      with:
+        name: binary directory
+        path: |
+          bin/swift-frontend
+          
