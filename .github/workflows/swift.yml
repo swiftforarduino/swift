@@ -17,6 +17,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    
+    - name: Ls
+      run: ls
 
     - name: Checkout Supporting Files And Configure
       run: |
