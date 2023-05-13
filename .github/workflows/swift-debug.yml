@@ -2,10 +2,10 @@ name: Swift Debug
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "avr-support-8" ]
-  pull_request:
-    branches: [ "avr-support-8" ]
+#   push:
+#     branches: [ "avr-support-8" ]
+#   pull_request:
+#     branches: [ "avr-support-8" ]
 
 env:
   CI_SERVER: 1
