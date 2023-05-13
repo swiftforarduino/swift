@@ -39,6 +39,7 @@ jobs:
 
     - name: Archive Built Products
       uses: actions/upload-artifact@v3
+      if: ${{ github.event_name == 'push' }}
       with:
         name: binary directory
         path: |
