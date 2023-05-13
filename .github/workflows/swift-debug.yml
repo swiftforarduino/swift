@@ -20,8 +20,10 @@ jobs:
 
     - name: Checkout Supporting Files And Configure
       run: |
-        ./checkout-swift-ci.sh debug
+        cd ..
+        swift/checkout-swift-ci.sh debug
 
     - name: Build
       run: |
-        ./build-swift-ci.sh debug
+        cd ..
+        swift/build-swift-ci.sh debug
