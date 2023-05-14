@@ -19,18 +19,14 @@ jobs:
 
     - name: Clean
       run: |
-        cd ..
         rm -rf *
         mkdir swift
 
     - uses: actions/checkout@v3
+      path: swift
 
     - name: Checkout Supporting Files And Configure
-      run: |
-        cd ..
-        swift/checkout-swift-ci.sh
+      run: swift/checkout-swift-ci.sh
 
     - name: Build
-      run: |
-        cd ..
-        swift/build-swift-ci.sh         
+      run: swift/build-swift-ci.sh         
