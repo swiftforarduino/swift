@@ -35,8 +35,8 @@ jobs:
       with:
         path: swift
 
-    - name: Checkout Supporting Files And Configure
+    - name: Checkout Supporting Files And Configure (Debug)
       run: swift/checkout-swift-ci.sh debug
 
-#     - name: Build
+#     - name: Build Debug
 #       run: swift/build-swift-ci.sh debug
