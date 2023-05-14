@@ -28,15 +28,16 @@ jobs:
 
     - name: Clean
       run: |
+        pwd
         rm -rf *
         mkdir swift
 
     - uses: actions/checkout@v3
       with:
-        path: swift
+        path: swift2
 
-    - name: Checkout Supporting Files And Configure
-      run: swift/checkout-swift-ci.sh
+#     - name: Checkout Supporting Files And Configure
+#       run: swift/checkout-swift-ci.sh
 
 #     - name: Build
 #       run: swift/build-swift-ci.sh         
