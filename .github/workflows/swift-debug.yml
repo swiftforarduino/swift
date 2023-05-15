@@ -16,18 +16,25 @@ jobs:
     runs-on: self-hosted
 
     steps:
+    - name: Info
+      run: |
+        echo $GITHUB_WORKSPACE
+        echo $GITHUB_ENV
+        ls -l $GITHUB_ENV
+        file $GITHUB_ENV
+        echo $GITHUB_REF_NAME
+        echo $GITHUB_PATH
+        echo $GITHUB_ACTION_PATH
 
     - name: Clean
-      run: |
-        rm -rf *
-        mkdir swift
+      run: rm -rf *
 
     - uses: actions/checkout@v3
       with:
         path: swift
 
-    - name: Checkout Supporting Files And Configure
+    - name: Checkout Supporting Files And Configure (Debug)
       run: swift/checkout-swift-ci.sh debug
 
-    - name: Build
+    - name: Build Debug
       run: swift/build-swift-ci.sh debug
