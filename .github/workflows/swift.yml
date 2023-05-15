@@ -27,9 +27,7 @@ jobs:
         echo $GITHUB_ACTION_PATH
 
     - name: Clean
-      run: |
-        pwd
-        rm -rf *
+      run: rm -rf *
 
     - uses: actions/checkout@v3
       with:
@@ -38,5 +36,5 @@ jobs:
     - name: Checkout Supporting Files And Configure
       run: swift/checkout-swift-ci.sh
 
-#     - name: Build
-#       run: swift/build-swift-ci.sh         
+    - name: Build
+      run: swift/build-swift-ci.sh         
