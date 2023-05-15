@@ -1,4 +1,4 @@
-name: Swift
+name: Swift 5.8
 
 on:
   workflow_dispatch:
@@ -20,12 +20,14 @@ jobs:
         working-directory: ..
 
     steps:
+    - name: Clean
+      run: rm -rf *
+
     - uses: actions/checkout@v3
+      with:
+        path: swift
 
-    - name: List
-      run: ls
-
-    - name: Checkout
+    - name: Checkout related projects and configure
       run: |
         swift/checkout-swift-ci.sh
 
