@@ -40,5 +40,5 @@ jobs:
       with:
         name: binary directory
         path: |
-          bin/swift-frontend
+          swift/bin/swift-frontend
           
