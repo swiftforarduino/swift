@@ -471,7 +471,7 @@ llvm::Constant *IRGenModule::getMangledAssociatedConformance(
   ApplyIRLinkage(IRLinkage::InternalLinkOnceODR).to(var);
   var->setAlignment(llvm::MaybeAlign(2));
   setTrueConstGlobal(var);
-  var->setSection(getReflectionTypeRefSectionName());
+  // var->setSection(getReflectionTypeRefSectionName());
 
   finished.installInGlobal(var);
 

@@ -289,7 +289,7 @@ llvm::Constant *IRGenModule::getAddrOfStringForMetadataRef(
   if (alignment)
     var->setAlignment(llvm::MaybeAlign(alignment));
   setTrueConstGlobal(var);
-  var->setSection(getReflectionTypeRefSectionName());
+  // var->setSection(getReflectionTypeRefSectionName());
 
   finished.installInGlobal(var);
 
@@ -408,7 +408,7 @@ llvm::Constant *IRGenModule::getAddrOfStringForTypeRef(
   ApplyIRLinkage(IRLinkage::InternalLinkOnceODR).to(var);
   var->setAlignment(llvm::MaybeAlign(2));
   setTrueConstGlobal(var);
-  var->setSection(getReflectionTypeRefSectionName());
+  // var->setSection(getReflectionTypeRefSectionName());
   
   finished.installInGlobal(var);
   
