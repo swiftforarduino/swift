@@ -3281,7 +3281,9 @@ llvm::Constant *IRGenModule::emitSwiftProtocols() {
     break;
   }
 
-  var->setSection(sectionName);
+  // if (!suppressSpecialSections) {
+  //   var->setSection(sectionName);
+  // }
   
   disableAddressSanitizer(*this, var);
   
@@ -3342,7 +3344,9 @@ llvm::Constant *IRGenModule::emitProtocolConformances() {
     break;
   }
 
-  var->setSection(sectionName);
+  // if (!suppressSpecialSections) {
+  //   var->setSection(sectionName);
+  // }
 
   disableAddressSanitizer(*this, var);
   
@@ -3412,7 +3416,9 @@ llvm::Constant *IRGenModule::emitTypeMetadataRecords() {
   auto initializer = llvm::ConstantArray::get(arrayTy, elts);
 
   var->setInitializer(initializer);
-  var->setSection(sectionName);
+  // if (!suppressSpecialSections) {
+  //   var->setSection(sectionName);
+  // }
   var->setAlignment(llvm::MaybeAlign(4));
 
   disableAddressSanitizer(*this, var);
@@ -3463,7 +3469,9 @@ llvm::Constant *IRGenModule::emitFieldDescriptors() {
         llvm::ConstantExpr::getBitCast(descriptor, FieldDescriptorPtrTy));
 
   var->setInitializer(llvm::ConstantArray::get(arrayTy, elts));
-  var->setSection(sectionName);
+  // if (!suppressSpecialSections) {
+  //   var->setSection(sectionName);
+  // }
   var->setAlignment(llvm::MaybeAlign(4));
 
   disableAddressSanitizer(*this, var);
@@ -3789,8 +3797,10 @@ llvm::GlobalValue *IRGenModule::defineTypeMetadata(CanType concreteType,
       getAddrOfLLVMVariable(entity, init, DbgTy));
 
   var->setConstant(isConstant);
-  if (!section.empty())
-    var->setSection(section);
+  // if (!section.empty()&&!suppressSpecialSections) {
+  //   var->setSection(sectionName);
+  // }
+
 
   LinkInfo link = LinkInfo::get(*this, entity, ForDefinition);
   if (link.isUsed())
@@ -3939,8 +3949,11 @@ IRGenModule::getAddrOfTypeMetadataPattern(NominalTypeDecl *D,
   if (init) {
     auto var = cast<llvm::GlobalVariable>(addr);
     var->setConstant(true);
-    if (!section.empty())
-      var->setSection(section);
+
+    
+  // if (!section.empty()&&!suppressSpecialSections) {
+  //   var->setSection(sectionName);
+  // }
 
     // Keep type metadata around for all types.
     addRuntimeResolvableType(D);
