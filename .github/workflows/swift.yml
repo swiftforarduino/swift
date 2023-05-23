@@ -37,4 +37,13 @@ jobs:
       run: swift/checkout-swift-ci.sh
 
     - name: Build
-      run: swift/build-swift-ci.sh         
+      run: swift/build-swift-ci.sh
+
+    - name: Stage
+      run: |
+        cp -fa build/Ninja-ReleaseAssert/swift-macosx-x86_64/bin/{swift,swift-ide-test,swiftc} ${HOME}/built/swift/
+        cd ${HOME}/built
+        zip --symlinks  -r swift.zip swift/
+
+    - name: Deploy
+      run: scp -P 227 ${HOME}/built/swift.zip carl@swiftforarduino.com:web-s4a-private/compilers/
