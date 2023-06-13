@@ -1,0 +1,49 @@
+name: Swift
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "avr-support-8" ]
+  pull_request:
+    branches: [ "avr-support-8" ]
+
+env:
+  CI_SERVER: 1
+  DEVELOPER_DIR: "/Applications/Xcode.app/Contents/Developer"
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+    - name: Info
+      run: |
+        echo $GITHUB_WORKSPACE
+        echo $GITHUB_ENV
+        ls -l $GITHUB_ENV
+        file $GITHUB_ENV
+        echo $GITHUB_REF_NAME
+        echo $GITHUB_PATH
+        echo $GITHUB_ACTION_PATH
+
+    - name: Clean
+      run: rm -rf *
+
+    - uses: actions/checkout@v3
+      with:
+        path: swift
+
+    - name: Checkout Supporting Files And Configure
+      run: swift/checkout-swift-ci.sh
+
+    - name: Build
+      run: swift/build-swift-ci.sh
+
+    - name: Stage
+      run: |
+        cp -fa build/Ninja-ReleaseAssert/swift-macosx-x86_64/bin/{swift,swift-ide-test,swiftc} ${HOME}/built/swift/
+        cd ${HOME}/built
+        zip --symlinks  -r swift.zip swift/
+
+    - name: Deploy
+      run: scp -P 227 ${HOME}/built/swift.zip carl@swiftforarduino.com:web-s4a-private/compilers/
