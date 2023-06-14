@@ -3,9 +3,9 @@ name: Swift 5.8
 on:
   workflow_dispatch:
   push:
-    branches: [ "avr-support-11" ]
+    branches: [ "avr-support-12" ]
   pull_request:
-    branches: [ "avr-support-11" ]
+    branches: [ "avr-support-12" ]
 
 env:
   CI_SERVER: 1
@@ -30,15 +30,13 @@ jobs:
       run: |
         swift/build-swift-ci.sh
 
-    - name: Duplicate Archives
-      run: |
-        cp -a build/Ninja-ReleaseAssert/swift-macosx-x86_64/bin swift/
-
-    - name: Archive Built Products
-      uses: actions/upload-artifact@v3
+    - name: Stage
       if: ${{ github.event_name == 'push' }}
-      with:
-        name: binary directory
-        path: |
-          swift/bin/swift-frontend
-          
+      run: |
+        cp -fa build/Ninja-ReleaseAssert/swift-macosx-x86_64/bin/{swift,swift-ide-test,swiftc,swift-frontend} ${HOME}/built/swift-5.9/
+        cd ${HOME}/built
+        zip --symlinks  -r swift-5.9.zip swift-5.9/
+
+    - name: Deploy
+      if: ${{ github.event_name == 'push' }}
+      run: scp -P 227 ${HOME}/built/swift-5.9.zip carl@swiftforarduino.com:web-s4a-private/compilers/

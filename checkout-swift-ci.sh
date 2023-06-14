@@ -6,14 +6,14 @@ git clone --depth=1 -b main git@github.com:swiftforarduino/AVR2.git AVR2
 
 if [[ "${CI_SERVER}" == "" ]]
 then
-  git clone --depth=1 -b avr-support-11 git@github.com:swiftforarduino/swift.git swift
+  git clone --depth=1 -b avr-support-12 git@github.com:swiftforarduino/swift.git swift
 fi
 
 ln -s ../AVR2/uSwift/Runtime swift/uSwiftRuntime
 
 cd swift
 
-utils/update-checkout --clone-with-ssh --scheme release/5.8 --skip-repository swift-nio \
+utils/update-checkout --clone-with-ssh --scheme release/5.9 --skip-repository swift-nio \
 --skip-repository swift-nio-ssh --skip-repository swift-lmdb --skip-repository swift-docc \
 --skip-repository swift-docc-render-artifact --skip-repository swift-docc-symbolkit \
 --skip-repository swift-markdown --skip-repository swift-experimental-string-processing \
