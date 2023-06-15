@@ -23,7 +23,8 @@ utils/update-checkout --clone-with-ssh --scheme release/5.9 --skip-repository sw
 --skip-repository swift-crypto --skip-repository swift-atomics \
 --skip-repository swift-nio-ssl --skip-repository sourcekit-lsp \
 --skip-repository indexstore-db --skip-repository swiftpm \
---skip-repository swift-numerics --skip-repository swift
+--skip-repository swift-numerics --skip-repository swift \
+--skip-repository swift-certificates --skip-repository swift-asn1
 
 # uses repositories
 #  'cmark'
