@@ -421,6 +421,9 @@ std::pair<bool, bool> LangOptions::setTarget(llvm::Triple triple) {
   // Set the "_pointerBitWidth" platform condition.
   switch (Target.getArch()) {
   default: llvm_unreachable("undefined architecture pointer bit width");
+  case llvm::Triple::ArchType::avr:
+    addPlatformConditionValue(PlatformConditionKind::PointerBitWidth, "_16");
+    break;    
   case llvm::Triple::ArchType::arm:
   case llvm::Triple::ArchType::thumb:
   case llvm::Triple::ArchType::aarch64_32:
