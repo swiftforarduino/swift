@@ -730,12 +730,12 @@ DECL_ATTR_KINDS = [
     SimpleDeclAttribute('realtime', 'Realtime',
                         OnFunc,
                         ABIStableToAdd, ABIStableToRemove, APIStableToAdd, APIStableToRemove,
-                        code=140),
+                        code=143),
 
     SimpleDeclAttribute('norealtime', 'Norealtime',
                         OnFunc,
                         ABIStableToAdd, ABIStableToRemove, APIStableToAdd, APIStableToRemove,
-                        code=141)
+                        code=144)
 ]
 
 # Schema for declaration modifiers:
