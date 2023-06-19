@@ -1,4 +1,4 @@
-name: Swift 5.8
+name: Swift 5.9
 
 on:
   workflow_dispatch:
