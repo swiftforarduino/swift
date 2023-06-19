@@ -1,16 +1,28 @@
 #! /usr/bin/arch -arch x86_64 /bin/bash -x
 
 PATH=$PATH:/Applications/CMake.app/Contents/bin
-
-git clone --depth=1 -b main git@github.com:swiftforarduino/AVR2.git AVR2
+SWIFT_BRANCH=avr-support-12
+SWIFT_URL="git@github.com:swiftforarduino/swift.git"
+# iota uSwift repository
+USWIFT_RUNTIME_SUB_PATH=uSwift/Runtime
+USWIFT_RUNTIME_URL=git@github.com:swiftforarduino/AVR2.git
+USWIFT_RUNTIME_BRANCH=main
+USWIFT_RUNTIME_LOCAL_DIR=AVR2
+# iota LLVM patches
+LLVM_REPO_NAME="iota"
+LLVM_REPO_URL="git@github.com:swiftforarduino/llvm-project.git"
+LLVM_BRANCH="avr-swift-progmem-addrspace-2"
 
 if [[ "${CI_SERVER}" == "" ]]
 then
-  git clone --depth=1 -b avr-support-12 git@github.com:swiftforarduino/swift.git swift
+  git clone --depth=1 -b $SWIFT_BRANCH $SWIFT_URL swift
 fi
 
-ln -s ../AVR2/uSwift/Runtime swift/uSwiftRuntime
+# setup uSwift
+git clone --depth=1 -b $USWIFT_RUNTIME_BRANCH $USWIFT_RUNTIME_URL $USWIFT_RUNTIME_LOCAL_DIR
+ln -s ../$USWIFT_RUNTIME_LOCAL_DIR/$USWIFT_RUNTIME_SUB_PATH swift/uSwiftRuntime
 
+# configure swift
 cd swift
 
 utils/update-checkout --clone-with-ssh --scheme release/5.9 --skip-repository swift-nio \
@@ -25,6 +37,11 @@ utils/update-checkout --clone-with-ssh --scheme release/5.9 --skip-repository sw
 --skip-repository indexstore-db --skip-repository swiftpm \
 --skip-repository swift-numerics --skip-repository swift \
 --skip-repository swift-certificates --skip-repository swift-asn1
+
+# get the IOTA patches for llvm to override checkouts
+git -C ../llvm-project remote add $LLVM_REPO_NAME $LLVM_REPO_URL
+git -C ../llvm-project fetch --depth=1 $LLVM_REPO_NAME $LLVM_BRANCH:$LLVM_BRANCH
+git -C ../llvm-project switch $LLVM_BRANCH
 
 # uses repositories
 #  'cmark'
