@@ -11,7 +11,7 @@ USWIFT_RUNTIME_LOCAL_DIR=AVR2
 # iota LLVM patches
 LLVM_REPO_NAME="iota"
 LLVM_REPO_URL="git@github.com:swiftforarduino/llvm-project.git"
-LLVM_BRANCH="avr-swift-progmem-addrspace-1"
+LLVM_BRANCH="avr-swift-abi-5.8-base"
 
 if [[ "${CI_SERVER}" == "" ]]
 then
