@@ -33,9 +33,11 @@ jobs:
     - name: Stage
       if: ${{ github.event_name == 'push' }}
       run: |
+        rm -rf ${HOME}/built/swift-5.8
+        mkdir -p ${HOME}/built/swift-5.8
         cp -fa build/Ninja-ReleaseAssert/swift-macosx-x86_64/bin/{swift,swift-ide-test,swiftc,swift-frontend} ${HOME}/built/swift-5.8/
         cd ${HOME}/built
-        zip --symlinks  -r swift-5.8.zip swift-5.8/
+        zip --symlinks -r swift-5.8.zip swift-5.8/
 
     - name: Deploy
       if: ${{ github.event_name == 'push' }}
