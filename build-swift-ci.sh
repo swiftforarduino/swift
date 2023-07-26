@@ -1,4 +1,4 @@
-#! /usr/bin/arch -arch x86_64 /bin/bash -ex
+#! /bin/bash -ex
 
 if [[ "$1" == "fulldebug" ]]
 then
