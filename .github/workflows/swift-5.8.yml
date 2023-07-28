@@ -37,6 +37,7 @@ jobs:
         mkdir -p ${HOME}/built/swift-5.8
         cp -fa build/Ninja-ReleaseAssert/swift-macosx-x86_64/bin/{swift,swift-ide-test,swiftc,swift-frontend} ${HOME}/built/swift-5.8/
         cd ${HOME}/built
+        rm swift-5.8.zip
         zip --symlinks -r swift-5.8.zip swift-5.8/
 
     - name: Deploy
