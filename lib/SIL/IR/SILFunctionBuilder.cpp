@@ -194,6 +194,13 @@ void SILFunctionBuilder::addFunctionAttributes(
     F->setRealtime(IsRealtimeUseGlobalDefault);
   }
 
+  // Propagate @interruptHandler
+  if (Attrs.hasAttribute<InterruptHandler>()) {
+    F->setIsInterruptHandler(IsInterruptHandler);
+  } else {
+    F->setIsInterruptHandler(IsNotInterruptHandler);
+  }
+
   // Propagate @_dynamicReplacement(for:).
   if (constant.isNull())
     return;
