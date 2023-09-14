@@ -721,7 +721,12 @@ DECL_ATTR_KINDS = [
     SimpleDeclAttribute('runtimeMetadata', 'RuntimeMetadata',
                         OnStruct, OnClass,
                         ABIBreakingToAdd, ABIBreakingToRemove, APIBreakingToAdd, APIBreakingToRemove,  # noqa: E501
-                        code=139)
+                        code=139),
+
+    SimpleDeclAttribute('interruptHandler', 'InterruptHandler',
+                        OnFunc,
+                        ABIStableToAdd, ABIStableToRemove, APIStableToAdd, APIStableToRemove,
+                        code=140)
 ]
 
 # Schema for declaration modifiers:

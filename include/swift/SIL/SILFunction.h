@@ -65,6 +65,10 @@ enum IsDistributed_t {
   IsNotDistributed,
   IsDistributed,
 };
+enum IsInterruptHandler_t {
+  IsNotInterruptHandler,
+  IsInterruptHandler
+};
 
 enum class PerformanceConstraints : uint8_t {
   None = 0,
@@ -396,6 +400,9 @@ private:
   /// The function is in a statically linked module.
   unsigned IsStaticallyLinked : 1;
 
+  /// True if the function is an interrupt handler.
+  unsigned IsInterruptHandler : 1;
+
   static void
   validateSubclassScope(SubclassScope scope, IsThunk_t isThunk,
                         const GenericSpecializationInformation *genericInfo) {
@@ -432,7 +439,8 @@ private:
               const SILDebugScope *debugScope,
               IsDynamicallyReplaceable_t isDynamic,
               IsExactSelfClass_t isExactSelfClass,
-              IsDistributed_t isDistributed);
+              IsDistributed_t isDistributed,
+              IsInterruptHandler_t isInterruptHandler);
 
   static SILFunction *
   create(SILModule &M, SILLinkage linkage, StringRef name,
@@ -447,7 +455,8 @@ private:
          Inline_t inlineStrategy = InlineDefault,
          EffectsKind EffectsKindAttr = EffectsKind::Unspecified,
          SILFunction *InsertBefore = nullptr,
-         const SILDebugScope *DebugScope = nullptr);
+         const SILDebugScope *DebugScope = nullptr,
+         IsInterruptHandler_t isInterruptHandler = IsInterruptHandler_t::IsNotInterruptHandler);
 
   void init(SILLinkage Linkage, StringRef Name, CanSILFunctionType LoweredType,
             GenericEnvironment *genericEnv, IsBare_t isBareSILFunction,
@@ -1057,6 +1066,13 @@ public:
 
   Purpose getSpecialPurpose() const { return specialPurpose; }
 
+  /// \return it the function an interrupt handler.
+  IsInterruptHandler_t isInterruptHandler() const { return IsInterruptHandler_t(IsInterruptHandler); }
+
+  void setIsInterruptHandler(IsInterruptHandler_t isInterruptHandler) {
+    IsInterruptHandler = unsigned(isInterruptHandler);
+  }
+  
   /// Get this function's global_init attribute.
   ///
   /// The implied semantics are:
