@@ -258,7 +258,7 @@ void SILFunction::createSnapshot(int id) {
       getGenericEnvironment(), isBare(), isTransparent(), isSerialized(),
       getEntryCount(), isThunk(), getClassSubclassScope(), getInlineStrategy(),
       getEffectsKind(), getDebugScope(), isDynamicallyReplaceable(),
-      isExactSelfClass(), isDistributed());
+      isExactSelfClass(), isDistributed(), isInterruptHandler());
 
   // Copy all relevant properties.
   // TODO: It's really unfortunate that this needs to be done manually. It would

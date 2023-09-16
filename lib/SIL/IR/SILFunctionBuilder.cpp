@@ -186,7 +186,7 @@ void SILFunctionBuilder::addFunctionAttributes(
     F->addSemanticsAttr("autodiff.nonvarying");
 
   // Propagate @interruptHandler
-  if (Attrs.hasAttribute<InterruptHandler>()) {
+  if (Attrs.hasAttribute<InterruptHandlerAttr>()) {
     F->setIsInterruptHandler(IsInterruptHandler);
   } else {
     F->setIsInterruptHandler(IsNotInterruptHandler);
