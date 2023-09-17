@@ -16,7 +16,8 @@
 // CHECK-LABEL define protected i32 @main
 // CHECK-NOT !interrupt
 
-@interruptHandler public func foo() { }
+@interruptHandler
+public func foo() { }
 // CHECK-LABEL: define protected swiftcc void {{.*}}foo
 // CHECK-SAME: !interrupt
 
