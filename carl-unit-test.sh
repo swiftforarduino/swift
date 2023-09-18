@@ -3,8 +3,10 @@
 # useful blog: https://medium.com/@mshockwave/using-llvm-lit-out-of-tree-5cddada85a78
 
 
+SCRIPT_DIR=$(dirname "$0")
+
 function realpath {
-    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+    [[ $1 = /* ]] && echo "$1" || echo "$SCRIPT_DIR/${1#./}"
 }
 
 if [ -z "$1" ]
@@ -18,7 +20,7 @@ fi
 
 LLVM_SOURCE_ROOT=$(realpath "../llvm-project/llvm")
 SWIFT_BUILD_DIR=../
-SWIFT_SOURCE_ROOT=$PWD
+SWIFT_SOURCE_ROOT=$SCRIPT_DIR
 SWIFT_BUILD_DIR=$1
 
 if [ -z "$2" ]
