@@ -1,5 +1,8 @@
 #! /bin/bash -x
 
+# useful blog: https://medium.com/@mshockwave/using-llvm-lit-out-of-tree-5cddada85a78
+
+
 function realpath {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }

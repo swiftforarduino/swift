@@ -1,4 +1,4 @@
-// runtime_scanner_interruptHandler_attribute.swift
+// interruptHandler_attribute_lowering.swift
 
 // These tests check that attributes on swift functions are propagated correctly to LLVM.
 
@@ -14,13 +14,10 @@
 
 
 // CHECK-LABEL define protected i32 @main
-// CHECK-NOT !interrupt
 
 @interruptHandler
 public func foo() { }
-// CHECK-LABEL: define protected swiftcc void {{.*}}foo
-// CHECK-SAME: !interrupt
+// CHECK-LABEL: define protected avr_intrcc void {{.*}}foo
 
 public func foo3() {}
 // CHECK-LABEL: define protected swiftcc void {{.*}}foo3
-// CHECK-NOT: !interrupt
