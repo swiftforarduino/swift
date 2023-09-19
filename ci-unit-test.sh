@@ -15,4 +15,4 @@ fi
 PLATFORM=macosx
 ARCH=x86_64
 
-swift/carl-unit-test.sh build/${BUILD_SUBDIR}/swift-${PLATFORM}-${ARCH} swift/test/AVR
+swift/carl-unit-test.sh build/${BUILD_SUBDIR}/swift-${PLATFORM}-${ARCH} test/AVR
