@@ -1618,6 +1618,9 @@ void IRGenModule::emitReflectionMetadataVersion() {
 }
 
 void IRGenerator::emitReflectionMetadataVersion() {
+  if (IRGen.Opts.ReflectionMetadata == ReflectionMetadataMode::None)
+    return;
+
   for (auto &m : *this) {
     m.second->emitReflectionMetadataVersion();
   }
