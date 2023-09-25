@@ -1,5 +1,4 @@
 // interruptHandler_attribute_lowering.swift
-// XFAIL: *
 
 // These tests check that attributes on swift functions are propagated correctly to LLVM.
 
