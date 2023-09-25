@@ -30,6 +30,10 @@ jobs:
       run: |
         swift/build-swift-ci.sh
 
+    - name: Test
+      run: |
+        swift/ci-unit-test.sh
+
     - name: Stage
       if: ${{ github.event_name == 'push' }}
       run: |

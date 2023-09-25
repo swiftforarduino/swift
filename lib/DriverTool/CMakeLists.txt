@@ -1,6 +1,5 @@
 set(driver_sources_and_options
                 driver.cpp
-                sec.c
                 autolink_extract_main.cpp
                 modulewrap_main.cpp
                 swift_api_digester_main.cpp

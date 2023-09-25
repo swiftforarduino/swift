@@ -2335,6 +2335,13 @@ void IRGenSILFunction::emitSILFunction() {
      CurFn->addMetadata("norealtime", *N);
   }
 
+  // If this is an interrupt handler, add metadata to the function
+  if(CurSILFn->isInterruptHandler() == IsInterruptHandler) {
+    if (IGM.Triple.getArch() == llvm::Triple::ArchType::avr) {
+      CurFn->setCallingConv(llvm::CallingConv::AVR_INTR);
+    }
+  }
+
   assert(params.empty() && "did not map all llvm params to SIL params?!");
 
   // It's really nice to be able to assume that we've already emitted

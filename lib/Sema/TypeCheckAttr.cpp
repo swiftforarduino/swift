@@ -160,6 +160,7 @@ public:
   IGNORED_ATTR(Documentation)
   IGNORED_ATTR(Realtime)
   IGNORED_ATTR(Norealtime)
+  IGNORED_ATTR(InterruptHandler)
 #undef IGNORED_ATTR
 
   void visitAlignmentAttr(AlignmentAttr *attr) {

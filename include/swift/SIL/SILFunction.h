@@ -76,6 +76,10 @@ enum IsRealtime_t {
   IsRealtime,
   IsRealtimeUseGlobalDefault
 };
+enum IsInterruptHandler_t {
+  IsNotInterruptHandler,
+  IsInterruptHandler
+};
 
 class SILSpecializeAttr final {
   friend SILFunction;
@@ -405,6 +409,9 @@ private:
   /// SwiftRealtimeVerifier.
   unsigned Realtime : 3;
 
+  /// True if the function is an interrupt handler.
+  unsigned IsInterruptHandler : 1;
+
   static void
   validateSubclassScope(SubclassScope scope, IsThunk_t isThunk,
                         const GenericSpecializationInformation *genericInfo) {
@@ -442,7 +449,8 @@ private:
               IsDynamicallyReplaceable_t isDynamic,
               IsExactSelfClass_t isExactSelfClass,
               IsDistributed_t isDistributed,
-              IsRealtime_t isRealtime);
+              IsRealtime_t isRealtime,
+              IsInterruptHandler_t isInterruptHandler);
 
   static SILFunction *
   create(SILModule &M, SILLinkage linkage, StringRef name,
@@ -458,7 +466,8 @@ private:
          EffectsKind EffectsKindAttr = EffectsKind::Unspecified,
          SILFunction *InsertBefore = nullptr,
          const SILDebugScope *DebugScope = nullptr,
-         IsRealtime_t isRealtime = IsRealtime_t::IsRealtimeUseGlobalDefault);
+         IsRealtime_t isRealtime = IsRealtime_t::IsRealtimeUseGlobalDefault,
+         IsInterruptHandler_t isInterruptHandler = IsInterruptHandler_t::IsNotInterruptHandler);
 
   void init(SILLinkage Linkage, StringRef Name, CanSILFunctionType LoweredType,
             GenericEnvironment *genericEnv, IsBare_t isBareSILFunction,
@@ -1074,6 +1083,14 @@ public:
   void setRealtime(IsRealtime_t realtime) {
     Realtime = unsigned(realtime);
   }
+
+  /// \return it the function an interrupt handler.
+  IsInterruptHandler_t isInterruptHandler() const { return IsInterruptHandler_t(IsInterruptHandler); }
+
+  void setIsInterruptHandler(IsInterruptHandler_t isInterruptHandler) {
+    IsInterruptHandler = unsigned(isInterruptHandler);
+  }
+  
 
   /// Get this function's global_init attribute.
   ///
