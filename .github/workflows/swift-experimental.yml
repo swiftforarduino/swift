@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches:
-    - avr-new-2
+    - avr-new-3
   pull_request:
     branches:
-    - avr-new-2
+    - avr-new-3
 
 env:
   DEVELOPER_DIR: /Applications/Xcode-13.2.1.app/Contents/Developer
