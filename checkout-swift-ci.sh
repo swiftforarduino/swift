@@ -11,7 +11,7 @@ USWIFT_RUNTIME_LOCAL_DIR=AVR2
 # iota LLVM patches
 LLVM_REPO_NAME="iota"
 LLVM_REPO_URL="git@github.com:swiftforarduino/llvm-project.git"
-LLVM_BRANCH="avr-swift-abi-5.9-base"
+LLVM_BRANCH="avr-swift-abi-main-base"
 
 if [[ -z $CI ]]
 then
@@ -24,7 +24,7 @@ ln -s ../$USWIFT_RUNTIME_LOCAL_DIR/$USWIFT_RUNTIME_SUB_PATH swift/uSwiftRuntime
 
 cd swift
 
-utils/update-checkout --clone-with-ssh --scheme release/5.9 --skip-repository swift-nio \
+utils/update-checkout --clone-with-ssh --skip-repository swift-nio \
 --skip-repository swift-nio-ssh --skip-repository swift-lmdb --skip-repository swift-docc \
 --skip-repository swift-docc-render-artifact --skip-repository swift-docc-symbolkit \
 --skip-repository swift-markdown --skip-repository swift-experimental-string-processing \
