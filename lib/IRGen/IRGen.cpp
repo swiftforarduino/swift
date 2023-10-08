@@ -89,6 +89,7 @@
 #include "llvm/Transforms/Instrumentation/ThreadSanitizer.h"
 #include "llvm/Transforms/ObjCARC.h"
 #include "llvm/Transforms/Scalar.h"
+#include "llvm/Transforms/Utils/NameAnonGlobals.h"
 
 #include <thread>
 
@@ -396,6 +397,7 @@ void swift::performLLVMOptimizations(const IRGenOptions &Opts,
         // lto summary.)
         Module->addModuleFlag(llvm::Module::Error, "EnableSplitLTOUnit",
                               uint32_t(1));
+        PassManagerToRun.addPass(NameAnonGlobalPass());
       }
       MPM.addPass(BitcodeWriterPass(
           *out, /*ShouldPreserveUseListOrder*/ false, EmitRegularLTOSummary));
