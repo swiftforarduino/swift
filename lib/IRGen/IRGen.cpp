@@ -397,7 +397,7 @@ void swift::performLLVMOptimizations(const IRGenOptions &Opts,
         // lto summary.)
         Module->addModuleFlag(llvm::Module::Error, "EnableSplitLTOUnit",
                               uint32_t(1));
-        PassManagerToRun.addPass(NameAnonGlobalPass());
+        MPM.addPass(NameAnonGlobalPass());
       }
       MPM.addPass(BitcodeWriterPass(
           *out, /*ShouldPreserveUseListOrder*/ false, EmitRegularLTOSummary));
