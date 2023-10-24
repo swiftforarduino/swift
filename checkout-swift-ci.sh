@@ -1,4 +1,4 @@
-#! /usr/bin/arch -arch x86_64 /bin/bash -x
+#! /usr/bin/arch -arch x86_64 /bin/bash -ex
 
 PATH=$PATH:/Applications/CMake.app/Contents/bin
 SWIFT_BRANCH=avr-new-2
@@ -19,6 +19,7 @@ then
 fi
 
 # setup uSwift
+rm -rf $USWIFT_RUNTIME_LOCAL_DIR
 git clone --depth=1 -b $USWIFT_RUNTIME_BRANCH $USWIFT_RUNTIME_URL $USWIFT_RUNTIME_LOCAL_DIR
 ln -s ../$USWIFT_RUNTIME_LOCAL_DIR/$USWIFT_RUNTIME_SUB_PATH swift/uSwiftRuntime
 
@@ -37,7 +38,8 @@ utils/update-checkout --clone-with-ssh --skip-repository swift-nio \
 --skip-repository swift-numerics --skip-repository swift
 
 # get the IOTA patches for llvm to override checkouts
-git -C ../llvm-project remote add $LLVM_REPO_NAME $LLVM_REPO_URL
+git -C ../llvm-project remote add $LLVM_REPO_NAME $LLVM_REPO_URL || true
+git -C ../llvm-project branch -D $LLVM_BRANCH || true
 git -C ../llvm-project fetch --depth=1 $LLVM_REPO_NAME $LLVM_BRANCH:$LLVM_BRANCH
 git -C ../llvm-project switch $LLVM_BRANCH
 
