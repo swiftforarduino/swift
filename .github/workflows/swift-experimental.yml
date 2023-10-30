@@ -10,7 +10,7 @@ on:
     - avr-new-3
 
 env:
-  DEVELOPER_DIR: /Applications/Xcode-13.2.1.app/Contents/Developer
+  #DEVELOPER_DIR: /Applications/Xcode-13.2.1.app/Contents/Developer
   DEPLOYMENT_LOCAL_SUBDIR: swift-experimental
   DEPLOYMENT_ZIP: swift-experimental.zip
   BUILT_SWIFT_SUBDIR: build/Ninja-ReleaseAssert/swift-macosx-x86_64/bin
