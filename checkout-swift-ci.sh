@@ -1,7 +1,7 @@
 #! /usr/bin/arch -arch x86_64 /bin/bash -ex
 
 PATH=$PATH:/Applications/CMake.app/Contents/bin
-SWIFT_BRANCH=avr-new-2
+SWIFT_BRANCH=avr-new-3
 SWIFT_URL="git@github.com:swiftforarduino/swift.git"
 # iota uSwift repository
 USWIFT_RUNTIME_SUB_PATH=uSwift/Runtime
@@ -21,6 +21,7 @@ fi
 # setup uSwift
 rm -rf $USWIFT_RUNTIME_LOCAL_DIR
 git clone --depth=1 -b $USWIFT_RUNTIME_BRANCH $USWIFT_RUNTIME_URL $USWIFT_RUNTIME_LOCAL_DIR
+rm swift/uSwiftRuntime
 ln -s ../$USWIFT_RUNTIME_LOCAL_DIR/$USWIFT_RUNTIME_SUB_PATH swift/uSwiftRuntime
 
 cd swift
@@ -93,7 +94,7 @@ fi
 utils/build-script -R -S --clean ${DEBUG_SWIFT_OPT} --extra-cmake-options="-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=AVR;ARM"  --extra-cmake-options="-DLLVM_ENABLE_PROJECTS='clang'" \
 --skip-build-benchmarks --skip-ios --skip-watchos --skip-tvos --darwin-deployment-version-osx 10.15 \
 --skip-early-swift-driver=true --skip-early-swiftsyntax=true \
---swift-driver=false --swift-disable-dead-stripping --bootstrapping=on
+--swift-driver=false --swift-disable-dead-stripping #--bootstrapping=
 # --swift-darwin-supported-archs "$(uname -m)"
 
 echo "** COMPLETED SWIFT CHECKOUT SOURCES AND CONFIGURATION **"
