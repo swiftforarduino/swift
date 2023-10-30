@@ -21,7 +21,7 @@ fi
 # setup uSwift
 rm -rf $USWIFT_RUNTIME_LOCAL_DIR
 git clone --depth=1 -b $USWIFT_RUNTIME_BRANCH $USWIFT_RUNTIME_URL $USWIFT_RUNTIME_LOCAL_DIR
-rm swift/uSwiftRuntime
+rm -f swift/uSwiftRuntime
 ln -s ../$USWIFT_RUNTIME_LOCAL_DIR/$USWIFT_RUNTIME_SUB_PATH swift/uSwiftRuntime
 
 cd swift
