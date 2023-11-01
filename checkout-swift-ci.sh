@@ -92,7 +92,7 @@ fi
 
 
 utils/build-script -R -S --clean ${DEBUG_SWIFT_OPT} --extra-cmake-options="-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=AVR;ARM"  --extra-cmake-options="-DLLVM_ENABLE_PROJECTS='clang'" \
---skip-build-benchmarks --skip-ios --skip-watchos --skip-tvos --darwin-deployment-version-osx 10.15 \
+--skip-build-benchmarks --skip-ios --skip-watchos --skip-tvos --darwin-deployment-version-osx 11.0 \
 --skip-early-swift-driver=true --skip-early-swiftsyntax=true \
 --swift-driver=false --swift-disable-dead-stripping #--bootstrapping=
 # --swift-darwin-supported-archs "$(uname -m)"
