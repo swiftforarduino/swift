@@ -78,3 +78,8 @@ SortedCFDatabase.def
 htmlcov
 .coverage
 /benchmark/scripts/Benchmark_Driverc
+
+# Ignore the symbolic link to the uSwift runtime directory
+# Do not add it to version control, it must be hand linked on each system
+#==============================================================================#
+uSwiftRuntime
