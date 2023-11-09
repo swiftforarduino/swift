@@ -30,13 +30,14 @@ utils/update-checkout --clone-with-ssh --skip-repository swift-nio \
 --skip-repository swift-nio-ssh --skip-repository swift-lmdb --skip-repository swift-docc \
 --skip-repository swift-docc-render-artifact --skip-repository swift-docc-symbolkit \
 --skip-repository swift-markdown --skip-repository swift-experimental-string-processing \
---skip-repository swift-llvm-bindings --skip-repository swift-xcode-playground-support \
+--skip-repository swift-xcode-playground-support \
 --skip-repository swift-corelibs-libdispatch --skip-repository swift-corelibs-foundation \
 --skip-repository swift-corelibs-xctest --skip-repository swift-stress-tester \
---skip-repository swift-crypto --skip-repository swift-atomics \
 --skip-repository swift-nio-ssl --skip-repository sourcekit-lsp \
---skip-repository indexstore-db --skip-repository swiftpm \
 --skip-repository swift-numerics --skip-repository swift
+
+#--skip-repository swift-llvm-bindings --skip-repository swiftpm
+#--skip-repository indexstore-db --skip-repository swift-crypto --skip-repository swift-atomics
 
 # get the IOTA patches for llvm to override checkouts
 git -C ../llvm-project remote add $LLVM_REPO_NAME $LLVM_REPO_URL || true
@@ -91,10 +92,18 @@ else
 fi
 
 
-utils/build-script -R -S --clean ${DEBUG_SWIFT_OPT} --extra-cmake-options="-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=AVR;ARM"  --extra-cmake-options="-DLLVM_ENABLE_PROJECTS='clang'" \
---skip-build-benchmarks --skip-ios --skip-watchos --skip-tvos --darwin-deployment-version-osx 11.0 \
---skip-early-swift-driver=true --skip-early-swiftsyntax=true \
---swift-driver=false --swift-disable-dead-stripping #--bootstrapping=
+utils/build-script -R -S --clean ${DEBUG_SWIFT_OPT} --extra-cmake-options="-DLLVM_TARGETS_TO_BUILD=AVR;ARM"  --extra-cmake-options="-DLLVM_ENABLE_PROJECTS='clang'" \
+--skip-build-benchmarks --skip-ios --skip-watchos --skip-tvos --playgroundsupport false \
+--toolchain-benchmarks false \
+--skip-build-benchmarks true \
+--skip-test-toolchain-benchmarks true
+
+#--build-stdlib-deployment-targets ARM
+
+# --skip-early-swift-driver=true --skip-early-swiftsyntax=true \
+# --swift-driver=false --swift-disable-dead-stripping
+#  --darwin-deployment-version-osx 11.0
+#--bootstrapping=
 # --swift-darwin-supported-archs "$(uname -m)"
 
 echo "** COMPLETED SWIFT CHECKOUT SOURCES AND CONFIGURATION **"
