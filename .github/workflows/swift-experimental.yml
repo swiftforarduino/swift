@@ -1,0 +1,63 @@
+name: Swift Experimental
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - avr-new-3
+    - avr-upstreamable-mods-1
+  pull_request:
+    branches:
+    - avr-new-3
+    - avr-upstreamable-mods-1
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode-15.0.1.app/Contents/Developer
+  DEPLOYMENT_LOCAL_SUBDIR: swift-experimental
+  DEPLOYMENT_ZIP: swift-experimental.zip
+  BUILT_SWIFT_SUBDIR: build/Ninja-ReleaseAssert/swift-macosx-x86_64/bin
+  DEPLOY_TO_SERVER: true
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+    - name: Clean
+      run: rm -rf *
+
+    - uses: actions/checkout@v3
+      with:
+        path: swift
+
+    - name: Checkout related projects and configure
+      run: |
+        swift/checkout-swift-ci.sh
+
+    - name: Build
+      run: |
+        swift/build-swift-ci.sh
+
+# The compiler unit tests for our custom features @realtime and @interruptHandler are currently
+# disabled in this branch because those features have been parked for now, while we synch up with
+# mainstream Swift and the latest embedded features/fixes. We can re-enable them later if/when we
+# re-add the features. However @realtime may no longer be needed as these features can probably be
+# done differently and better with the new Swift experimental embedded features built by Kuba, from
+# the Apple Swift team.
+
+    # - name: Test
+    #   run: |
+    #     swift/ci-unit-test.sh
+
+    - name: Stage
+      if: ${{ github.event_name == 'push' }}
+      run: |
+        rm -rf ${HOME}/built/${DEPLOYMENT_LOCAL_SUBDIR} ${HOME}/built/${DEPLOYMENT_ZIP}
+        mkdir -p ${HOME}/built/${DEPLOYMENT_LOCAL_SUBDIR}
+        cp -fa ${BUILT_SWIFT_SUBDIR}/{swift,swift-ide-test,swiftc,swift-frontend} ${HOME}/built/${DEPLOYMENT_LOCAL_SUBDIR}/
+        cd ${HOME}/built
+        zip --symlinks -r ${DEPLOYMENT_ZIP} ${DEPLOYMENT_LOCAL_SUBDIR}/
+
+    - name: Deploy
+      if: ${{ github.event_name == 'push' }}
+      run: scp -P 227 ${HOME}/built/${DEPLOYMENT_ZIP} ubuntu@swiftforarduino.com:web-s4a-private/compilers/
+          
