@@ -2216,7 +2216,9 @@ void IRGenModule::emitVTableStubs() {
       // Create a single stub function which calls swift_deletedMethodError().
       stub = llvm::Function::Create(llvm::FunctionType::get(VoidTy, false),
                                     llvm::GlobalValue::InternalLinkage,
+                                    /*addrspace*/DataLayout.getProgramAddressSpace(),
                                     "_swift_dead_method_stub");
+                                    // getModule()); // most places do this, but this doesn't work here because we then try to add the function again two lines down
       stub->setAttributes(constructInitialAttributes());
       Module.getFunctionList().push_back(stub);
       stub->setCallingConv(DefaultCC);
