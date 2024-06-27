@@ -2584,6 +2584,13 @@ void IRGenSILFunction::emitSILFunction() {
   }
   emitDynamicSelfMetadata(*this);
 
+  // If this is an interrupt handler, add metadata to the function
+  if(CurSILFn->isInterruptHandler() == IsInterruptHandler) {
+    if (IGM.Triple.getArch() == llvm::Triple::ArchType::avr) {
+      CurFn->setCallingConv(llvm::CallingConv::AVR_INTR);
+    }
+  }
+
   assert(params.empty() && "did not map all llvm params to SIL params?!");
 
 #ifndef NDEBUG

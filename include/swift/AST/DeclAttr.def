@@ -500,6 +500,10 @@ SIMPLE_DECL_ATTR(sensitive, Sensitive,
   OnStruct | UserInaccessible | ABIStableToAdd | ABIStableToRemove | APIBreakingToAdd | APIStableToRemove,
   159)
 
+SIMPLE_DECL_ATTR(interruptHandler, InterruptHandler,
+  OnFunc | ABIStableToAdd | ABIStableToRemove | APIStableToAdd | APIStableToRemove,
+  160)
+
 LAST_DECL_ATTR(PreInverseGenerics)
 
 #undef DECL_ATTR_ALIAS
