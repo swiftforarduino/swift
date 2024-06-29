@@ -2587,7 +2587,7 @@ void IRGenSILFunction::emitSILFunction() {
   // If this is an interrupt handler, add metadata to the function
   if(CurSILFn->isInterruptHandler() == IsInterruptHandler) {
     if (IGM.Triple.getArch() == llvm::Triple::ArchType::avr) {
-      CurFn->setCallingConv(llvm::CallingConv::AVR_INTR);
+      CurFn->setCallingConv(llvm::CallingConv::AVR_SIGNAL);
     }
   }
 
