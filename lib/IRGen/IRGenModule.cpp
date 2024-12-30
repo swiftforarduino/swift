@@ -266,6 +266,8 @@ IRGenModule::IRGenModule(IRGenerator &irgen,
   Int16Ty = llvm::Type::getInt16Ty(getLLVMContext());
   Int32Ty = llvm::Type::getInt32Ty(getLLVMContext());
   Int64Ty = llvm::Type::getInt64Ty(getLLVMContext());
+  FunctionPtrTy = llvm::PointerType::get(getLLVMContext(),DataLayout.getProgramAddressSpace());
+  // llvm::Type::getInt8Ty(getLLVMContext())->getPointerTo(DataLayout.getProgramAddressSpace());
   SizeTy = DataLayout.getIntPtrType(getLLVMContext(), /*addrspace*/ 0);
 
   // For the relative address type, we want to use the int32 bit type
