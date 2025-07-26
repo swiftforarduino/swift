@@ -1,0 +1,13 @@
+diff --git a/Utilities/build-script-helper.py b/Utilities/build-script-helper.py
+index c4512844..bdfb7f8a 100755
+--- a/Utilities/build-script-helper.py
++++ b/Utilities/build-script-helper.py
+@@ -708,7 +708,7 @@ def build_using_cmake(args, toolchain_bin, build_dir, targets):
+             base_swift_flags.append("-cas-friendly-debug-info")
+ 
+     for target in targets:
+-        base_cmake_flags = []
++        base_cmake_flags = ['-DBUILD_SHARED_LIBS=NO']
+         swift_flags = base_swift_flags.copy()
+         swift_flags.append("-target %s" % target)
+         if "-apple-macosx" in args.build_target:

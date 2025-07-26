@@ -1,0 +1,179 @@
+name: Microswift 6.5
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - avr-irgen-functions-respect-llvm-datalayout-3
+    - avr-irgen-functions-respect-llvm-datalayout-2  
+    - avr-mods-5
+    - avr-upstreamable-mods-3
+    - s4a-mods-1
+    - s4a-mods-2
+
+  pull_request:
+    branches:
+    - avr-irgen-functions-respect-llvm-datalayout-3
+    - avr-irgen-functions-respect-llvm-datalayout-2  
+    - avr-mods-5
+    - avr-upstreamable-mods-3
+    - s4a-mods-1
+    - s4a-mods-2
+
+env:
+  # DEVELOPER_DIR: /Applications/Xcode-15.0.1.app/Contents/Developer
+  DEPLOYMENT_LOCAL_SUBDIR: swift-6.5
+  DEPLOYMENT_ZIP: swift-6.5.zip
+  SOURCEKITD_FRAMEWORK_DIR: sourcekitd
+  SOURCEKITD_FRAMEWORK_ZIP: sourcekitd.zip
+  # choices here are (nothing), release-debuginfo, release, debug, R, D
+  # note that (nothing) is the same as release-debuginfo and R is the same as release and D is the same as debug
+  # note that debug only implies --debug-swift because debug llvm is so costly and rarely useful
+  BUILD_TYPE: R
+  # ^^ make release the default... on a faster build server we could make RelWithDebInfoAssert the default
+  # but our server is old and slow and the build time has ballooned up to 2 hours for a RWDIA build!
+  # also we need to try and make the final binaries as small as possible, which isn't helped by doubling up with swift-ide-test
+  # and extra space with the new swift-driver binary
+  DEPLOY_TO_SERVER: true
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: [self-hosted, macOS, xcode-16.2, cmake]
+    # Use a commit message starting with ci-skip if you don't want to run a build for some reason.
+    if: ${{ !startsWith(github.event.head_commit.message, 'ci-skip') || github.event_name == 'workflow_dispatch' }}
+
+    steps:
+    - name: Set Environment Variables
+      run: |
+        if [[ "$BUILD_TYPE" = "R" || "$BUILD_TYPE" = "release" ]]
+        then
+          echo "RELEASE_TYPE_FLAGS=release" >> $GITHUB_ENV
+          BUILD_SUBDIR_SUFFIX=ReleaseAssert
+        elif [[ -z "$BUILD_TYPE" || "$BUILD_TYPE" = "release-debuginfo" ]]
+        then
+          echo "RELEASE_TYPE_FLAGS=release-debuginfo" >> $GITHUB_ENV
+          BUILD_SUBDIR_SUFFIX=RelWithDebInfoAssert
+        elif [[ "$BUILD_TYPE" = "D" || "$BUILD_TYPE" = "debug" ]]
+        then
+          echo "RELEASE_TYPE_FLAGS=debug-swift" >> $GITHUB_ENV
+          BUILD_SUBDIR_SUFFIX=ReleaseAssert+debug-swift
+        else
+          echo "UNKNOWN BUILD TYPE"
+        fi
+        ARCH=$(uname -m)
+        echo "BUILT_SWIFT_SUBDIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64/bin" >> $GITHUB_ENV
+        echo "BUILT_SWIFT_DIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64" >> $GITHUB_ENV
+        echo "BUILT_SWIFT_HOST_DIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-${ARCH}" >> $GITHUB_ENV
+        (/usr/bin/which -s sccache && echo "SCCACHE_FLAG=--sccache" || echo "SCCACHE_FLAG=") >> $GITHUB_ENV
+        echo "BUILT_TOOLCHAIN_SUBDIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/toolchain-macosx-arm64/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/" >> $GITHUB_ENV
+        # subdirectories are...
+        # usr/bin
+        # usr/lib/swift/macosx
+        # usr/lib/sourcekitd.framework
+
+        # --- Can be overridden by environment variables set before the GHA runner is run ---
+        [[ -n "$DEVELOPER_DIR" ]] || echo "DEVELOPER_DIR=/Applications/Xcode-16.2.app/Contents/Developer" >> $GITHUB_ENV
+        [[ -n "$COMPILER_OUTPUT_ROOT" ]] || echo "COMPILER_OUTPUT_ROOT=/tmp/built" >> $GITHUB_ENV
+        [[ -n "$UPLOAD_SERVER"   ]] || echo "UPLOAD_SERVER=swiftforarduino.com" >> $GITHUB_ENV
+        [[ -n "$UPLOAD_PATH"     ]] || echo "UPLOAD_PATH=/web-private/compilers/" >> $GITHUB_ENV
+
+    - name: Show environment for debugging
+      run: env
+
+    - name: Clean
+      run: rm -rf *
+
+    - uses: actions/checkout@v3
+      with:
+        path: swift
+
+    - name: Checkout related projects and configure
+      run: |
+        swift/utils/update-checkout \
+          --scheme main \
+          --clone \
+          --skip-history \
+          --skip-repository swift \
+          --skip-repository swift-log \
+          --skip-repository swift-async-algorithms \
+          --skip-repository swift-corelibs-xctest \
+          --skip-repository swift-stress-tester \
+          --skip-repository swift-integration-tests \
+          --skip-repository swift-corelibs-foundation \
+          --skip-repository swift-foundation-icu \
+          --skip-repository swift-corelibs-libdispatch \
+          --skip-repository swift-foundation \
+          --skip-repository swift-xcode-playground-support \
+          --skip-repository swift-llvm-bindings \
+          --skip-repository swift-sdk-generator \
+          --skip-repository swift-nio \
+          --skip-repository wasi-libc \
+          --skip-repository wasmkit
+
+    - name: Patch Swift Driver
+      run: |
+        cp swift/swift-driver-patch3.txt swift-driver/
+        cd swift-driver
+        patch < swift-driver-patch3.txt
+
+    - name: Build
+      run: |
+        swift/utils/build-script --skip-build-benchmarks  --skip-ios --skip-watchos --skip-xros --skip-tvos \
+          --extra-cmake-options="-DBUILD_SHARED_LIBS=NO,-DSWIFT_SHOULD_BUILD_EMBEDDED_STDLIB_CROSS_COMPILING=YES,-DLLVM_USE_STATIC_ZSTD=TRUE,-DLLVM_ENABLE_ZSTD=NO,-DSWIFT_INCLUDE_TEST_BINARIES=YES" \
+          --swift-darwin-supported-archs "arm64;x86_64" --reconfigure --infer-cross-compile-hosts-on-darwin \
+          --${RELEASE_TYPE_FLAGS} --swift-disable-dead-stripping \
+          --bootstrapping=hosttools ${SCCACHE_FLAG} --static-zlib TRUE --static-libxml2 TRUE
+
+# The compiler unit tests for our custom features @realtime and @interruptHandler are currently
+# disabled in this branch because those features have been parked for now, while we synch up with
+# mainstream Swift and the latest embedded features/fixes. We can re-enable them later if/when we
+# re-add the features. However @realtime may no longer be needed as these features can probably be
+# done differently and better with the new Swift experimental embedded features built by Kuba, from
+# the Apple Swift team.
+
+    # avr specific unit tests only
+    - name: Test
+      run: |
+        export PATH="$(dirname "$(xcrun -f cmake)"):$PATH"
+        swift/utils/run-test --build-dir ${BUILT_SWIFT_HOST_DIR} --build skip swift/test/embedded/avr
+
+    - name: Stage
+      if: ${{ github.event_name == 'push' }}
+      continue-on-error: true
+      run: |
+        rm -rf ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR} ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP}
+        mkdir -p ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR}
+        cp -fa ${BUILT_SWIFT_SUBDIR}/{swift,swiftc,swift-frontend,swift-driver} ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR}/
+        cp -fa ${BUILT_SWIFT_SUBDIR}/{swift-ide-test} ${COMPILER_OUTPUT_ROOT}/${DEPLOYME4NT_LOCAL_SUBDIR}/ || echo "swift-ide-test NOT copied (probably built on Intel)"
+        cd ${COMPILER_OUTPUT_ROOT}
+        zip --symlinks -r ${DEPLOYMENT_ZIP} ${DEPLOYMENT_LOCAL_SUBDIR}/
+
+
+    - name: Stage Sourcekitd
+      if: ${{ github.event_name == 'push' }}
+      continue-on-error: true
+      run: |
+        rm -rf ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_DIR} -rf ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_ZIP}
+        mkdir -p ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_DIR}
+        cp -fa ${BUILT_SWIFT_DIR}/lib ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_DIR}/
+        cd ${COMPILER_OUTPUT_ROOT}
+        zip --symlinks -r ${SOURCEKITD_FRAMEWORK_ZIP} ${SOURCEKITD_FRAMEWORK_DIR}/
+
+
+    - name: Deploy
+      if: ${{ github.event_name != 'pull_request' }}
+      continue-on-error: true
+      run: |
+        scp -v ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP} ${UPLOAD_USERNAME}${UPLOAD_SERVER}:${UPLOAD_PATH}    
+
+
+    - name: Deploy Sourcekitd
+      if: ${{ github.event_name != 'pull_request' }}
+      continue-on-error: true
+      run: |
+        scp -v ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_ZIP} ${UPLOAD_USERNAME}${UPLOAD_SERVER}:${UPLOAD_PATH}   
+
