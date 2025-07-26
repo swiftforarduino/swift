@@ -1,0 +1,16 @@
+diff --git a/clang/lib/CodeGen/TargetInfo.cpp b/clang/lib/CodeGen/TargetInfo.cpp
+index 74997f0f9e9d..8b84c05c5ae5 100644
+--- a/clang/lib/CodeGen/TargetInfo.cpp
++++ b/clang/lib/CodeGen/TargetInfo.cpp
+@@ -8391,7 +8391,10 @@ public:
+ class AVRTargetCodeGenInfo : public TargetCodeGenInfo {
+ public:
+   AVRTargetCodeGenInfo(CodeGenTypes &CGT, unsigned NPR, unsigned NRR)
+-      : TargetCodeGenInfo(std::make_unique<AVRABIInfo>(CGT, NPR, NRR)) {}
++      : TargetCodeGenInfo(std::make_unique<AVRABIInfo>(CGT, NPR, NRR)) {
++        SwiftInfo =
++          std::make_unique<SwiftABIInfo>(CGT, /*SwiftErrorInRegister=*/true);
++      }
+
+   LangAS getGlobalVarAddressSpace(CodeGenModule &CGM,
+                                   const VarDecl *D) const override {
