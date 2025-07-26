@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 08a42684..670b9159 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -14,7 +14,7 @@ endif()
+ 
+ project(llbuild LANGUAGES CXX)
+ 
+-option(BUILD_SHARED_LIBS "Build Shared Libraries" ON)
++option(BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
+ option(BUILD_TESTING "Build tests" ON)
+ option(LLBUILD_ENABLE_ASSERTIONS "enable assertions in release mode" NO)
+ 
