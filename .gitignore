@@ -101,3 +101,8 @@ Runtimes/**/*.modulemap
 Runtimes/**/*.in
 !Runtimes/**/*.cmake.in
 !Runtimes/**/CMakeConfig.h.in
+
+# Ignore the symbolic link to the uSwift runtime directory
+# Do not add it to version control, it must be hand linked on each system
+#==============================================================================#
+uSwiftRuntime
