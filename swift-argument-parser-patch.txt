@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index cad3a23..eab98ae 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -4,7 +4,7 @@ project(swift-argument-parser
+   LANGUAGES Swift)
+ 
+ option(BUILD_EXAMPLES "Build Example Programs" TRUE)
+-option(BUILD_SHARED_LIBS "Build shared libraries by default" YES)
++option(BUILD_SHARED_LIBS "Build shared libraries by default" NO)
+ 
+ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+ 
