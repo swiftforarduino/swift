@@ -79,8 +79,9 @@ llvm::Constant *irgen::emitAddrOfConstantString(IRGenModule &IGM,
   case StringLiteralInst::Encoding::Bytes:
   case StringLiteralInst::Encoding::UTF8:
   case StringLiteralInst::Encoding::UTF8_OSLOG:
-    return IGM.getAddrOfGlobalString(SLI->getValue(), false, useOSLogEncoding);
-
+    return IGM.getAddrOfGlobalString(SLI->getValue(),
+                            /*relatively addressed*/ false, useOSLogEncoding,
+                            /*store with text segment*/ IGM.Triple.getArch() == llvm::Triple::ArchType::avr);
   case StringLiteralInst::Encoding::ObjCSelector:
     llvm_unreachable("cannot get the address of an Objective-C selector");
   }
