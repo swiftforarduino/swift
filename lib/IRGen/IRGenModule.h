@@ -1224,11 +1224,13 @@ private:
 public:
   std::pair<llvm::GlobalVariable *, llvm::Constant *> createStringConstant(
       StringRef Str, bool willBeRelativelyAddressed = false,
-      StringRef sectionName = "", StringRef name = "");
+      StringRef sectionName = "", StringRef name = "",
+      bool storeWithFunctionsInTextSegment = false);
   llvm::Constant *getAddrOfGlobalString(
       StringRef utf8,
       CStringSectionType sectionType = CStringSectionType::Default,
-      bool willBeRelativelyAddressed = false);
+      bool willBeRelativelyAddressed = false,
+      bool storeWithFunctionsInTextSegment = false);
   llvm::Constant *getAddrOfGlobalUTF16String(StringRef utf8);
   llvm::Constant *
   getAddrOfGlobalIdentifierString(StringRef utf8,

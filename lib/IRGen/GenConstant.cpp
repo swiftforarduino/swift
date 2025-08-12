@@ -81,8 +81,15 @@ llvm::Constant *irgen::emitAddrOfConstantString(IRGenModule &IGM,
   case StringLiteralInst::Encoding::UTF8_OSLOG:
     return IGM.getAddrOfGlobalString(
         SLI->getValue(), useOSLogEncoding ? CStringSectionType::OSLogString
-                                          : CStringSectionType::Default);
-
+                                          : CStringSectionType::Default,
+        /* will be relatively addressed */ false,
+        /*when upstreaming this, should probably be something like an experimental
+        setting or flag or command line switch, then it can be independent of architecture
+        plus it introduces requirements on stdlib, which is ok for the 548 platform, but
+        if done for all AVR code would break string constants for anyone building for AVR
+        who didn't know about it and adjust their stdlib accordingly. For now this is an
+        adequate hack*/
+        /*store with text segment*/ IGM.Triple.getArch() == llvm::Triple::ArchType::avr);
   case StringLiteralInst::Encoding::ObjCSelector:
     llvm_unreachable("cannot get the address of an Objective-C selector");
   }
