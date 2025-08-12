@@ -6201,7 +6201,8 @@ Address IRGenFunction::createAlloca(llvm::Type *type,
 /// It should be removed when fixed. rdar://problem/22674524
 llvm::Constant *
 IRGenModule::getAddrOfGlobalString(StringRef data, CStringSectionType type,
-                                   bool willBeRelativelyAddressed) {
+                                   bool willBeRelativelyAddressed,
+                                   bool storeWithFunctionsInTextSegment) {
   if (TargetInfo.OutputObjectFormat != llvm::Triple::MachO ||
       willBeRelativelyAddressed)
     type = CStringSectionType::Default;
@@ -6250,7 +6251,8 @@ IRGenModule::getAddrOfGlobalString(StringRef data, CStringSectionType type,
   }
 
   entry = createStringConstant(data, willBeRelativelyAddressed,
-                               sectionName, name);
+                               sectionName, name,
+                                storeWithFunctionsInTextSegment);
   return entry.second;
 }
 
