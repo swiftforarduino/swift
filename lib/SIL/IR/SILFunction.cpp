@@ -159,7 +159,8 @@ SILFunction *SILFunction::create(
     IsDistributed_t isDistributed, IsRuntimeAccessible_t isRuntimeAccessible,
     IsExactSelfClass_t isExactSelfClass, IsThunk_t isThunk,
     SubclassScope classSubclassScope, Inline_t inlineStrategy, EffectsKind E,
-    SILFunction *insertBefore, const SILDebugScope *debugScope) {
+    SILFunction *insertBefore, const SILDebugScope *debugScope,
+    IsInterruptHandler_t isInterruptHandler) {
   // Get a StringMapEntry for the function.  As a sop to error cases,
   // allow the name to have an empty string.
   llvm::StringMapEntry<SILFunction*> *entry = nullptr;
@@ -185,7 +186,7 @@ SILFunction *SILFunction::create(
         M, linkage, name, loweredType, genericEnv, isBareSILFunction, isTrans,
         serializedKind, entryCount, isThunk, classSubclassScope, inlineStrategy,
         E, debugScope, isDynamic, isExactSelfClass, isDistributed,
-        isRuntimeAccessible);
+        isRuntimeAccessible, isInterruptHandler);
   }
   if (entry) entry->setValue(fn);
 
@@ -224,10 +225,12 @@ SILFunction::SILFunction(
     SubclassScope classSubclassScope, Inline_t inlineStrategy, EffectsKind E,
     const SILDebugScope *DebugScope, IsDynamicallyReplaceable_t isDynamic,
     IsExactSelfClass_t isExactSelfClass, IsDistributed_t isDistributed,
-    IsRuntimeAccessible_t isRuntimeAccessible)
+    IsRuntimeAccessible_t isRuntimeAccessible,
+    IsInterruptHandler_t isInterruptHandler)
     : SwiftObjectHeader(functionMetatype), Module(Module),
       index(Module.getNewFunctionIndex()),
-      Availability(AvailabilityRange::alwaysAvailable()) {
+      Availability(AvailabilityRange::alwaysAvailable(),
+      IsInterruptHandler(unsigned(isInterruptHandler)) {
   init(Linkage, Name, LoweredType, genericEnv, isBareSILFunction, isTrans,
        serializedKind, entryCount, isThunk, classSubclassScope, inlineStrategy, E,
        DebugScope, isDynamic, isExactSelfClass, isDistributed,
@@ -334,7 +337,7 @@ void SILFunction::createSnapshot(int id) {
       getGenericEnvironment(), isBare(), isTransparent(), getSerializedKind(),
       getEntryCount(), isThunk(), getClassSubclassScope(), getInlineStrategy(),
       getEffectsKind(), getDebugScope(), isDynamicallyReplaceable(),
-      isExactSelfClass(), isDistributed(), isRuntimeAccessible());
+      isExactSelfClass(), isDistributed(), isRuntimeAccessible(), isInterruptHandler());
 
   // Copy all relevant properties.
   // TODO: It's really unfortunate that this needs to be done manually. It would
