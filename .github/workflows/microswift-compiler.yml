@@ -5,14 +5,14 @@ on:
   push:
     branches:
     - avr-irgen-functions-respect-llvm-datalayout-2  
-    # - avr-mods-5
-    # - avr-upstreamable-mods-3
+    - avr-mods-5
+    - avr-upstreamable-mods-3
 
   pull_request:
     branches:
     - avr-irgen-functions-respect-llvm-datalayout-2  
-    # - avr-mods-5
-    # - avr-upstreamable-mods-3
+    - avr-mods-5
+    - avr-upstreamable-mods-3
 
 env:
   # DEVELOPER_DIR: /Applications/Xcode-15.0.1.app/Contents/Developer
@@ -33,6 +33,9 @@ env:
 jobs:
   build:
     runs-on: self-hosted
+    # Use a commit message starting with ci-skip if you don't want to run a build for some reason.
+    if: ${{ !startsWith(github.event.head_commit.message, 'ci-skip') || github.event_name == 'workflow_dispatch' }}
+
     steps:
     - name: Set Environment Variables
       run: |
