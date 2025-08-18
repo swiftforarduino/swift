@@ -733,7 +733,7 @@ SIMPLE_DECL_ATTR(_noMetadata, NoMetadata,
 
 SIMPLE_DECL_ATTR(interruptHandler, InterruptHandler,
   OnFunc,
-  ABIStableToAdd | ABIStableToRemove | APIStableToAdd | APIStableToRemove ,
+  ABIStableToAdd | ABIStableToRemove | APIStableToAdd | APIStableToRemove | UnconstrainedInABIAttr,
   139)
 
 CONTEXTUAL_SIMPLE_DECL_ATTR(consuming, Consuming,

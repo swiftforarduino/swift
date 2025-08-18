@@ -542,7 +542,7 @@ private:
             EffectsKind E, const SILDebugScope *DebugScope,
             IsDynamicallyReplaceable_t isDynamic,
             IsExactSelfClass_t isExactSelfClass, IsDistributed_t isDistributed,
-            IsRuntimeAccessible_t isRuntimeAccessible);
+            IsRuntimeAccessible_t isRuntimeAccessible, IsInterruptHandler_t isInterruptHandler);
 
   /// Set has ownership to the given value. True means that the function has
   /// ownership, false means it does not.

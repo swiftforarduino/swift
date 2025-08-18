@@ -179,7 +179,7 @@ SILFunction *SILFunction::create(
     fn->init(linkage, name, loweredType, genericEnv, isBareSILFunction, isTrans,
              serializedKind, entryCount, isThunk, classSubclassScope,
              inlineStrategy, E, debugScope, isDynamic, isExactSelfClass,
-             isDistributed, isRuntimeAccessible);
+             isDistributed, isRuntimeAccessible, isInterruptHandler);
     assert(fn->empty());
   } else {
     fn = new (M) SILFunction(
@@ -229,12 +229,11 @@ SILFunction::SILFunction(
     IsInterruptHandler_t isInterruptHandler)
     : SwiftObjectHeader(functionMetatype), Module(Module),
       index(Module.getNewFunctionIndex()),
-      Availability(AvailabilityRange::alwaysAvailable(),
-      IsInterruptHandler(unsigned(isInterruptHandler)) {
+      Availability(AvailabilityRange::alwaysAvailable()) {
   init(Linkage, Name, LoweredType, genericEnv, isBareSILFunction, isTrans,
        serializedKind, entryCount, isThunk, classSubclassScope, inlineStrategy, E,
        DebugScope, isDynamic, isExactSelfClass, isDistributed,
-       isRuntimeAccessible);
+       isRuntimeAccessible, isInterruptHandler);
 
   // Set our BB list to have this function as its parent. This enables us to
   // splice efficiently basic blocks in between functions.
@@ -251,7 +250,7 @@ void SILFunction::init(
     SubclassScope classSubclassScope, Inline_t inlineStrategy, EffectsKind E,
     const SILDebugScope *DebugScope, IsDynamicallyReplaceable_t isDynamic,
     IsExactSelfClass_t isExactSelfClass, IsDistributed_t isDistributed,
-    IsRuntimeAccessible_t isRuntimeAccessible) {
+    IsRuntimeAccessible_t isRuntimeAccessible, IsInterruptHandler_t isInterruptHandler) {
   setName(Name);
 
   assert(!LoweredType->hasTypeParameter() &&
@@ -276,6 +275,7 @@ void SILFunction::init(
   this->ExactSelfClass = isExactSelfClass;
   this->IsDistributed = isDistributed;
   this->IsRuntimeAccessible = isRuntimeAccessible;
+  this->IsInterruptHandler = isInterruptHandler;
   this->ForceEnableLexicalLifetimes = DoNotForceEnableLexicalLifetimes;
   this->UseStackForPackMetadata = DoUseStackForPackMetadata;
   this->HasUnsafeNonEscapableResult = false;
