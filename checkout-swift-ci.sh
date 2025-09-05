@@ -16,10 +16,13 @@ ln -s $USWIFT_RUNTIME_LOCAL_DIR/$USWIFT_RUNTIME_SUB_PATH swift/uSwiftRuntime
 
 cd swift
 
-pushd ../swift-driver
-git restore .
-git clean -f .
-popd
+if [[ -d ../swift-driver ]]
+then
+  pushd ../swift-driver
+  git restore .
+  git clean -f .
+  popd
+fi
 
 # utils/update-checkout --clone-with-ssh --clone-depth 1 --skip-repository swift
 
