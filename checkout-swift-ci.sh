@@ -20,6 +20,7 @@ cd swift
 
 # Created by ChatGPT so it might be guff...
 utils/update-checkout \
+  --reset-to-remote \
   --clone-with-ssh \
   --skip-history \
   --skip-repository swift \
@@ -66,6 +67,14 @@ utils/update-checkout \
 # needed by sourcekit-lsp
 # indexstore-db
 # swift-lmdb (transitive)
+
+cp swift-driver-patch2.txt ../swift-driver
+
+pushd ../swift-driver
+patch < swift-driver-patch2.txt
+popd
+
+
 
 echo "** COMPLETED SWIFT CHECKOUT SOURCES **"
 

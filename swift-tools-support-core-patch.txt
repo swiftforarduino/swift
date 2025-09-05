@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 98acf96..a37f858 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -22,7 +22,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+ 
+ set(CMAKE_DISABLE_IN_SOURCE_BUILD YES)
+ 
+-option(BUILD_SHARED_LIBS "Build shared libraries by default" YES)
++option(BUILD_SHARED_LIBS "Build shared libraries by default" NO)
+ 
+ find_package(dispatch QUIET)
+ find_package(Foundation QUIET)
