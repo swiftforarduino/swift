@@ -104,4 +104,4 @@ jobs:
       if: ${{ github.event_name == 'push' }}
       continue-on-error: true
       run: |
-        scp -P 227 ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP} ${UPLOAD_USERNAME}@${UPLOAD_SERVER}:${UPLOAD_PATH}          
+        scp ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP} ${UPLOAD_USERNAME}@${UPLOAD_SERVER}:${UPLOAD_PATH}          
