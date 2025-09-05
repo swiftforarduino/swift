@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6781b886..56040b3a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -40,7 +40,7 @@ endif()
+ # ensure Swift compiler can find _CSwiftScan
+ add_compile_options($<$<COMPILE_LANGUAGE:Swift>:-I$<SEMICOLON>${CMAKE_CURRENT_SOURCE_DIR}/Sources/CSwiftScan/include>)
+ 
+-option(BUILD_SHARED_LIBS "Build shared libraries by default" YES)
++option(BUILD_SHARED_LIBS "Build shared libraries by default" NO)
+ option(SWIFT_DRIVER_BUILD_TOOLS "Build makeOption" NO)
+ 
+ # Toolchain Vended Dependencies

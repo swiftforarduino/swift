@@ -16,7 +16,6 @@ on:
 
 env:
   # DEVELOPER_DIR: /Applications/Xcode-15.0.1.app/Contents/Developer
-  DEVELOPER_DIR: /Applications/Xcode-16.2.0.app/Contents/Developer
   DEPLOYMENT_LOCAL_SUBDIR: swift-6.2
   DEPLOYMENT_ZIP: swift-6.2.zip
   # choices here are (nothing), release-debuginfo, release, debug, R, D
@@ -28,26 +27,25 @@ env:
   # also we need to try and make the final binaries as small as possible, which isn't helped by doubling up with swift-ide-test
   # and extra space with the new swift-driver binary
   DEPLOY_TO_SERVER: true
-  COMPILER_OUTPUT_ROOT: /Volumes/CI-HD/built
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: [self-hosted, macOS, ARM64, xcode-16.2, cmake]
     # Use a commit message starting with ci-skip if you don't want to run a build for some reason.
     if: ${{ !startsWith(github.event.head_commit.message, 'ci-skip') || github.event_name == 'workflow_dispatch' }}
 
     steps:
     - name: Set Environment Variables
       run: |
-        if [ "${{ env.BUILD_TYPE }}" = "R" -o "${{ env.BUILD_TYPE }}" = "release" ]
+        if [[ "$BUILD_TYPE" = "R" || "$BUILD_TYPE" = "release" ]]
         then
           echo "RELEASE_TYPE_FLAGS=release" >> $GITHUB_ENV
           BUILD_SUBDIR_SUFFIX=ReleaseAssert
-        elif [ "${{ env.BUILD_TYPE }}" = "" -o "${{ env.BUILD_TYPE }}" = "release-debuginfo" ]
+        elif [[ -z "$BUILD_TYPE" || "$BUILD_TYPE" = "release-debuginfo" ]]
         then
           echo "RELEASE_TYPE_FLAGS=release-debuginfo" >> $GITHUB_ENV
           BUILD_SUBDIR_SUFFIX=RelWithDebInfoAssert
-        elif [ "${{ env.BUILD_TYPE }}" = "D" -o "${{ env.BUILD_TYPE }}" = "debug" ]
+        elif [[ "$BUILD_TYPE" = "D" || "$BUILD_TYPE" = "debug" ]]
         then
           echo "RELEASE_TYPE_FLAGS=debug-swift" >> $GITHUB_ENV
           BUILD_SUBDIR_SUFFIX=ReleaseAssert+debug-swift
@@ -55,6 +53,16 @@ jobs:
           echo "UNKNOWN BUILD TYPE"
         fi
         echo "BUILT_SWIFT_SUBDIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64/bin" >> $GITHUB_ENV
+
+        # --- Can be overridden by environment variables set before the GHA runner is run ---
+        [[ -n "$DEVELOPER_DIR" ]] || echo "DEVELOPER_DIR=/Applications/Xcode-16.2.app/Contents/Developer" >> $GITHUB_ENV
+        [[ -n "$COMPILER_OUTPUT_ROOT" ]] || echo "COMPILER_OUTPUT_ROOT=/Volumes/CI-HD/built" >> $GITHUB_ENV
+        [[ -n "$UPLOAD_USERNAME" ]] || echo "UPLOAD_USERNAME=carl" >> $GITHUB_ENV
+        [[ -n "$UPLOAD_SERVER"   ]] || echo "UPLOAD_SERVER=swiftforarduino.com" >> $GITHUB_ENV
+        [[ -n "$UPLOAD_PATH"     ]] || echo "UPLOAD_PATH=web-s4a-private/compilers/" >> $GITHUB_ENV
+
+    - name: Show environment for debugging
+      run: env
 
     - name: Clean
       run: rm -rf *
@@ -84,6 +92,7 @@ jobs:
 
     - name: Stage
       if: ${{ github.event_name == 'push' }}
+      continue-on-error: true
       run: |
         rm -rf ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR} ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP}
         mkdir -p ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR}
@@ -91,8 +100,8 @@ jobs:
         cd ${COMPILER_OUTPUT_ROOT}
         zip --symlinks -r ${DEPLOYMENT_ZIP} ${DEPLOYMENT_LOCAL_SUBDIR}/
 
-# disable for now
     - name: Deploy
       if: ${{ github.event_name == 'push' }}
-      run: scp -P 227 ${HOME}/built/${DEPLOYMENT_ZIP} carl@swiftforarduino.com:web-s4a-private/compilers/
-          
+      continue-on-error: true
+      run: |
+        scp -P 227 ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP} ${UPLOAD_USERNAME}@${UPLOAD_SERVER}:${UPLOAD_PATH}          

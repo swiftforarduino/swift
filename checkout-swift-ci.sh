@@ -16,6 +16,14 @@ ln -s $USWIFT_RUNTIME_LOCAL_DIR/$USWIFT_RUNTIME_SUB_PATH swift/uSwiftRuntime
 
 cd swift
 
+if [[ -d ../swift-driver ]]
+then
+  pushd ../swift-driver
+  git restore .
+  git clean -f .
+  popd
+fi
+
 # utils/update-checkout --clone-with-ssh --clone-depth 1 --skip-repository swift
 
 # Created by ChatGPT so it might be guff...
@@ -66,6 +74,14 @@ utils/update-checkout \
 # needed by sourcekit-lsp
 # indexstore-db
 # swift-lmdb (transitive)
+
+cp swift-driver-patch2.txt ../swift-driver
+
+pushd ../swift-driver
+patch < swift-driver-patch2.txt
+popd
+
+
 
 echo "** COMPLETED SWIFT CHECKOUT SOURCES **"
 
