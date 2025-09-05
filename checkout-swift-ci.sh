@@ -16,11 +16,15 @@ ln -s $USWIFT_RUNTIME_LOCAL_DIR/$USWIFT_RUNTIME_SUB_PATH swift/uSwiftRuntime
 
 cd swift
 
+pushd ../swift-driver
+git restore .
+git clean -f .
+popd
+
 # utils/update-checkout --clone-with-ssh --clone-depth 1 --skip-repository swift
 
 # Created by ChatGPT so it might be guff...
 utils/update-checkout \
-  --reset-to-remote \
   --clone-with-ssh \
   --skip-history \
   --skip-repository swift \
