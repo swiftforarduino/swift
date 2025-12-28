@@ -86,9 +86,10 @@ jobs:
 # done differently and better with the new Swift experimental embedded features built by Kuba, from
 # the Apple Swift team.
 
-    # - name: Test
-    #   run: |
-    #     swift/ci-unit-test.sh
+    # avr specific unit tests only
+    - name: Test
+      run: |
+        swift/utils/run-test --build-dir ${BUILT_SWIFT_SUBDIR} swift/test/embedded/avr
 
     - name: Stage
       if: ${{ github.event_name == 'push' }}
