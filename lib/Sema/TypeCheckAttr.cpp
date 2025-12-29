@@ -206,7 +206,6 @@ public:
   IGNORED_ATTR(AllowFeatureSuppression)
   IGNORED_ATTR(PreInverseGenerics)
   IGNORED_ATTR(Safe)
-  IGNORED_ATTR(Warn)
   IGNORED_ATTR(InterruptHandler)
 #undef IGNORED_ATTR
 
