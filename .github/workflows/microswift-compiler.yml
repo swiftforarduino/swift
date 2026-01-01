@@ -62,7 +62,7 @@ jobs:
         [[ -n "$COMPILER_OUTPUT_ROOT" ]] || echo "COMPILER_OUTPUT_ROOT=/Volumes/CI-HD/built" >> $GITHUB_ENV
         [[ -n "$UPLOAD_USERNAME" ]] || echo "UPLOAD_USERNAME=carl" >> $GITHUB_ENV
         [[ -n "$UPLOAD_SERVER"   ]] || echo "UPLOAD_SERVER=swiftforarduino.com" >> $GITHUB_ENV
-        [[ -n "$UPLOAD_PATH"     ]] || echo "UPLOAD_PATH=web-s4a-private/compilers/" >> $GITHUB_ENV
+        [[ -n "$UPLOAD_PATH"     ]] || echo "UPLOAD_PATH=/web-private/compilers/" >> $GITHUB_ENV
 
     - name: Show environment for debugging
       run: env

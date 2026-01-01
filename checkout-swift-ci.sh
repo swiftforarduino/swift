@@ -27,7 +27,11 @@ cd swift
 # utils/update-checkout --clone-with-ssh --clone-depth 1 --skip-repository swift
 
 # Created by ChatGPT so it might be guff...
+
+echo "tied to the 6.3 branches ** CORRECT IN FUTURE IF NEEDED **"
+
 utils/update-checkout \
+  --scheme release/6.3 \
   --clone-with-ssh \
   --skip-history \
   --skip-repository swift \
