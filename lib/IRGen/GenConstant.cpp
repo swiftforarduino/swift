@@ -82,6 +82,7 @@ llvm::Constant *irgen::emitAddrOfConstantString(IRGenModule &IGM,
     return IGM.getAddrOfGlobalString(
         SLI->getValue(), useOSLogEncoding ? CStringSectionType::OSLogString
                                           : CStringSectionType::Default,
+        /* will be relatively addressed */ false,
         /*when upstreaming this, should probably be something like an experimental
         setting or flag or command line switch, then it can be independent of architecture
         plus it introduces requirements on stdlib, which is ok for the 548 platform, but

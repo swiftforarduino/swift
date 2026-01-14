@@ -32,7 +32,7 @@ echo "tied to the 6.3 branches ** CORRECT IN FUTURE IF NEEDED **"
 
 utils/update-checkout \
   --scheme release/6.3 \
-  --clone-with-ssh \
+  --clone \
   --skip-history \
   --skip-repository swift \
   --skip-repository swift-log \

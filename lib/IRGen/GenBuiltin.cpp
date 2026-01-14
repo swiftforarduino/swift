@@ -1048,6 +1048,19 @@ void irgen::emitBuiltinCall(IRGenFunction &IGF, const BuiltinInfo &Builtin,
     // Cast the predicate to a pointer.
     PredPtr = IGF.Builder.CreateBitCast(PredPtr, IGM.PtrTy);
     llvm::Value *FnCode = args.claimNext();
+    if (IGM.DataLayout.getProgramAddressSpace()!=0) {
+      // cast function pointer to int8 ptr in program address space
+      // then to int8 ptr in addr space 0
+      // this is currently useful only likely for AVR
+      // and it's really just to keep llvm happy
+      // in the end the value passed will make sense to
+      // llvm and be lowered correctly
+      if (isa<llvm::Function>(FnCode)) {
+        auto psPtr = llvm::ConstantExpr::getBitCast(
+          cast<llvm::Function>(FnCode), IGM.Int8ProgramSpacePtrTy);
+        FnCode = llvm::ConstantExpr::getAddrSpaceCast(psPtr, IGM.Int8PtrTy);
+      }
+    }
     // Get the context if any.
     llvm::Value *Context;
     if (Builtin.ID == BuiltinValueKind::OnceWithContext) {
