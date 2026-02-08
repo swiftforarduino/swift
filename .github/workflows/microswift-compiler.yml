@@ -20,6 +20,8 @@ env:
   # DEVELOPER_DIR: /Applications/Xcode-15.0.1.app/Contents/Developer
   DEPLOYMENT_LOCAL_SUBDIR: swift-6.3
   DEPLOYMENT_ZIP: swift-6.3.zip
+  SOURCEKITD_FRAMEWORK_DIR: sourcekitd
+  SOURCEKITD_FRAMEWORK_ZIP: sourcekitd.zip
   # choices here are (nothing), release-debuginfo, release, debug, R, D
   # note that (nothing) is the same as release-debuginfo and R is the same as release and D is the same as debug
   # note that debug only implies --debug-swift because debug llvm is so costly and rarely useful
@@ -57,6 +59,11 @@ jobs:
         echo "BUILT_SWIFT_SUBDIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64/bin" >> $GITHUB_ENV
         echo "BUILT_SWIFT_DIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64" >> $GITHUB_ENV
         (/usr/bin/which -s sccache && echo "SCCACHE_FLAG=--sccache" || echo "SCCACHE_FLAG=") >> tmp.txt
+        echo "BUILT_TOOLCHAIN_SUBDIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/toolchain-macosx-arm64/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/" >> $GITHUB_ENV
+        # subdirectories are...
+        # usr/bin
+        # usr/lib/swift/macosx
+        # usr/lib/sourcekitd.framework
 
         # --- Can be overridden by environment variables set before the GHA runner is run ---
         [[ -n "$DEVELOPER_DIR" ]] || echo "DEVELOPER_DIR=/Applications/Xcode-16.2.app/Contents/Developer" >> $GITHUB_ENV
@@ -105,8 +112,28 @@ jobs:
         cd ${COMPILER_OUTPUT_ROOT}
         zip --symlinks -r ${DEPLOYMENT_ZIP} ${DEPLOYMENT_LOCAL_SUBDIR}/
 
+
+    - name: Stage Sourcekitd
+      if: ${{ github.event_name == 'push' }}
+      continue-on-error: true
+      run: |
+        rm -rf ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_DIR} -rf ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_ZIP}
+        mkdir -p ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_DIR}
+        cp -fa ${BUILT_TOOLCHAIN_SUBDIR}/usr/lib/sourcekitd.framework ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_DIR}/
+        cd ${COMPILER_OUTPUT_ROOT}
+        zip --symlinks -r ${SOURCEKITD_FRAMEWORK_ZIP} ${SOURCEKITD_FRAMEWORK_DIR}/
+
+
     - name: Deploy
       if: ${{ github.event_name == 'push' }}
       continue-on-error: true
       run: |
-        scp ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP} ${UPLOAD_USERNAME}@${UPLOAD_SERVER}:${UPLOAD_PATH}          
+        scp ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP} ${UPLOAD_USERNAME}@${UPLOAD_SERVER}:${UPLOAD_PATH}    
+
+
+    - name: Deploy Sourcekitd
+      if: ${{ github.event_name == 'push' }}
+      continue-on-error: true
+      run: |
+        scp ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_ZIP} ${UPLOAD_USERNAME}@${UPLOAD_SERVER}:${UPLOAD_PATH}   
+
