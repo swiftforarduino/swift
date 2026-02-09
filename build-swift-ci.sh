@@ -3,16 +3,15 @@
 cd swift
 
 utils/build-script --skip-build-benchmarks  --skip-ios --skip-watchos --skip-xros \
-  --extra-cmake-options="-DBUILD_SHARED_LIBS=NO,-DSWIFT_SHOULD_BUILD_EMBEDDED_STDLIB_CROSS_COMPILING=YES,-DLLVM_USE_STATIC_ZSTD=TRUE" \
+  --extra-cmake-options="-DBUILD_SHARED_LIBS=NO,-DSWIFT_SHOULD_BUILD_EMBEDDED_STDLIB_CROSS_COMPILING=YES,-DLLVM_USE_STATIC_ZSTD=TRUE,-DLLVM_ENABLE_ZSTD=NO" \
   --swift-darwin-supported-archs "arm64" \
   --${RELEASE_TYPE_FLAGS} --swift-disable-dead-stripping \
-  --bootstrapping=hosttools ${SCCACHE_FLAG} --static-zlib TRUE --static-libxml2 TRUE \
-  --sourcekit-lsp --install-all --infer
+  --bootstrapping=hosttools ${SCCACHE_FLAG} --static-zlib TRUE --static-libxml2 TRUE
+  # --sourcekit-lsp --install-all --infer
 
 echo "** COMPLETED SWIFT COMPILER BUILD **"
 
 
- 
 
 #  /*
 # utils/build-script --skip-build-benchmarks  --skip-ios --skip-watchos --skip-xros \
