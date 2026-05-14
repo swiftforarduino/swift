@@ -68,7 +68,6 @@ jobs:
         # --- Can be overridden by environment variables set before the GHA runner is run ---
         [[ -n "$DEVELOPER_DIR" ]] || echo "DEVELOPER_DIR=/Applications/Xcode-16.2.app/Contents/Developer" >> $GITHUB_ENV
         [[ -n "$COMPILER_OUTPUT_ROOT" ]] || echo "COMPILER_OUTPUT_ROOT=/tmp/built" >> $GITHUB_ENV
-        [[ -n "$UPLOAD_USERNAME" ]] || echo "UPLOAD_USERNAME=carl" >> $GITHUB_ENV
         [[ -n "$UPLOAD_SERVER"   ]] || echo "UPLOAD_SERVER=swiftforarduino.com" >> $GITHUB_ENV
         [[ -n "$UPLOAD_PATH"     ]] || echo "UPLOAD_PATH=/web-private/compilers/" >> $GITHUB_ENV
 
@@ -151,12 +150,12 @@ jobs:
       if: ${{ github.event_name == 'push' }}
       continue-on-error: true
       run: |
-        scp ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP} ${UPLOAD_USERNAME}@${UPLOAD_SERVER}:${UPLOAD_PATH}    
+        scp ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP} ${UPLOAD_USERNAME}${UPLOAD_SERVER}:${UPLOAD_PATH}    
 
 
     - name: Deploy Sourcekitd
       if: ${{ github.event_name == 'push' }}
       continue-on-error: true
       run: |
-        scp ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_ZIP} ${UPLOAD_USERNAME}@${UPLOAD_SERVER}:${UPLOAD_PATH}   
+        scp ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_ZIP} ${UPLOAD_USERNAME}${UPLOAD_SERVER}:${UPLOAD_PATH}   
 
