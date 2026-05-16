@@ -104,6 +104,12 @@ jobs:
           --skip-repository wasi-libc \
           --skip-repository wasmkit
 
+    - name: Patch Swift Driver
+      run: |
+        cp swift/swift-driver-patch2.txt swift-driver/
+        cd swift-driver
+        patch < swift-driver-patch2.txt
+
     - name: Build
       run: |
         swift/utils/build-script --skip-build-benchmarks  --skip-ios --skip-watchos --skip-xros --skip-tvos \
