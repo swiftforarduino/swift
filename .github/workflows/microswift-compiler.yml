@@ -147,14 +147,14 @@ jobs:
 
 
     - name: Deploy
-      if: ${{ github.event_name == 'push' }}
+      if: ${{ github.event_name != 'pull_request' }}
       continue-on-error: true
       run: |
         scp ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP} ${UPLOAD_USERNAME}${UPLOAD_SERVER}:${UPLOAD_PATH}    
 
 
     - name: Deploy Sourcekitd
-      if: ${{ github.event_name == 'push' }}
+      if: ${{ github.event_name != 'pull_request' }}
       continue-on-error: true
       run: |
         scp ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_ZIP} ${UPLOAD_USERNAME}${UPLOAD_SERVER}:${UPLOAD_PATH}   
