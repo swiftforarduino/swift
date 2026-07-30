@@ -13,7 +13,7 @@
 
 @interruptHandler
 public func foo() { }
-// CHECK-LABEL: define protected avr_intrcc void {{.*}}foo
+// CHECK-LABEL: define protected avr_signalcc void {{.*}}foo
 
 public func foo3() {}
 // CHECK-LABEL: define protected void {{.*}}foo3
