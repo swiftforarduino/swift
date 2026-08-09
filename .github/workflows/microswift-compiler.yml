@@ -113,8 +113,8 @@ jobs:
     - name: Build
       run: |
         swift/utils/build-script --skip-build-benchmarks  --skip-ios --skip-watchos --skip-xros --skip-tvos \
-          --extra-cmake-options="-DBUILD_SHARED_LIBS=NO,-DSWIFT_SHOULD_BUILD_EMBEDDED_STDLIB_CROSS_COMPILING=YES,-DLLVM_USE_STATIC_ZSTD=TRUE,-DLLVM_ENABLE_ZSTD=NO,-DSWIFT_PRIMARY_VARIANT_ARCH=arm64" \
-          --swift-darwin-supported-archs "arm64" --reconfigure --infer-cross-compile-hosts-on-darwin \
+          --extra-cmake-options="-DBUILD_SHARED_LIBS=NO,-DSWIFT_SHOULD_BUILD_EMBEDDED_STDLIB_CROSS_COMPILING=YES,-DLLVM_USE_STATIC_ZSTD=TRUE,-DLLVM_ENABLE_ZSTD=NO" \
+          --swift-darwin-supported-archs "arm64;x86_64" --reconfigure --infer-cross-compile-hosts-on-darwin \
           --${RELEASE_TYPE_FLAGS} --swift-disable-dead-stripping \
           --bootstrapping=hosttools ${SCCACHE_FLAG} --static-zlib TRUE --static-libxml2 TRUE
 
