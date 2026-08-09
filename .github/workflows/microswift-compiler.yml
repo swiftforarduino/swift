@@ -130,7 +130,8 @@ jobs:
     # avr specific unit tests only
     - name: Test
       run: |
-        swift/utils/run-test --build-dir ${BUILT_SWIFT_HOST_DIR} swift/test/embedded/avr
+        export PATH="$(dirname "$(xcrun -f cmake)"):$PATH"
+        swift/utils/run-test --build-dir ${BUILT_SWIFT_HOST_DIR} --build skip swift/test/embedded/avr
 
     - name: Stage
       if: ${{ github.event_name == 'push' }}
