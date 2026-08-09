@@ -56,7 +56,7 @@ jobs:
         else
           echo "UNKNOWN BUILD TYPE"
         fi
-        ARCH=$(arch)
+        ARCH=$(uname -m)
         echo "BUILT_SWIFT_SUBDIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64/bin" >> $GITHUB_ENV
         echo "BUILT_SWIFT_DIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64" >> $GITHUB_ENV
         echo "BUILT_SWIFT_HOST_DIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-${ARCH}" >> $GITHUB_ENV
