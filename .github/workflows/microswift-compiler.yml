@@ -56,8 +56,10 @@ jobs:
         else
           echo "UNKNOWN BUILD TYPE"
         fi
+        ARCH=$(arch)
         echo "BUILT_SWIFT_SUBDIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64/bin" >> $GITHUB_ENV
         echo "BUILT_SWIFT_DIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64" >> $GITHUB_ENV
+        echo "BUILT_SWIFT_HOST_DIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-${ARCH}" >> $GITHUB_ENV
         (/usr/bin/which -s sccache && echo "SCCACHE_FLAG=--sccache" || echo "SCCACHE_FLAG=") >> $GITHUB_ENV
         echo "BUILT_TOOLCHAIN_SUBDIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/toolchain-macosx-arm64/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/" >> $GITHUB_ENV
         # subdirectories are...
@@ -128,7 +130,7 @@ jobs:
     # avr specific unit tests only
     - name: Test
       run: |
-        swift/utils/run-test --build-dir ${BUILT_SWIFT_DIR} swift/test/embedded/avr
+        swift/utils/run-test --build-dir ${BUILT_SWIFT_HOST_DIR} swift/test/embedded/avr
 
     - name: Stage
       if: ${{ github.event_name == 'push' }}
