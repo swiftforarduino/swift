@@ -32,9 +32,13 @@ env:
   # and extra space with the new swift-driver binary
   DEPLOY_TO_SERVER: true
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build:
-    runs-on: [self-hosted, macOS, ARM64, xcode-16.2, cmake]
+    runs-on: [self-hosted, macOS, xcode-16.2, cmake]
     # Use a commit message starting with ci-skip if you don't want to run a build for some reason.
     if: ${{ !startsWith(github.event.head_commit.message, 'ci-skip') || github.event_name == 'workflow_dispatch' }}
 
@@ -56,9 +60,11 @@ jobs:
         else
           echo "UNKNOWN BUILD TYPE"
         fi
+        ARCH=$(uname -m)
         echo "BUILT_SWIFT_SUBDIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64/bin" >> $GITHUB_ENV
         echo "BUILT_SWIFT_DIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64" >> $GITHUB_ENV
-        (/usr/bin/which -s sccache && echo "SCCACHE_FLAG=--sccache" || echo "SCCACHE_FLAG=") >> tmp.txt
+        echo "BUILT_SWIFT_HOST_DIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-${ARCH}" >> $GITHUB_ENV
+        (/usr/bin/which -s sccache && echo "SCCACHE_FLAG=--sccache" || echo "SCCACHE_FLAG=") >> $GITHUB_ENV
         echo "BUILT_TOOLCHAIN_SUBDIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/toolchain-macosx-arm64/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/" >> $GITHUB_ENV
         # subdirectories are...
         # usr/bin
@@ -114,7 +120,7 @@ jobs:
       run: |
         swift/utils/build-script --skip-build-benchmarks  --skip-ios --skip-watchos --skip-xros --skip-tvos \
           --extra-cmake-options="-DBUILD_SHARED_LIBS=NO,-DSWIFT_SHOULD_BUILD_EMBEDDED_STDLIB_CROSS_COMPILING=YES,-DLLVM_USE_STATIC_ZSTD=TRUE,-DLLVM_ENABLE_ZSTD=NO" \
-          --swift-darwin-supported-archs "arm64" --reconfigure \
+          --swift-darwin-supported-archs "arm64;x86_64" --reconfigure --infer-cross-compile-hosts-on-darwin \
           --${RELEASE_TYPE_FLAGS} --swift-disable-dead-stripping \
           --bootstrapping=hosttools ${SCCACHE_FLAG} --static-zlib TRUE --static-libxml2 TRUE
 
@@ -128,7 +134,8 @@ jobs:
     # avr specific unit tests only
     - name: Test
       run: |
-        swift/utils/run-test --build-dir ${BUILT_SWIFT_DIR} swift/test/embedded/avr
+        export PATH="$(dirname "$(xcrun -f cmake)"):$PATH"
+        swift/utils/run-test --build-dir ${BUILT_SWIFT_HOST_DIR} --build skip swift/test/embedded/avr
 
     - name: Stage
       if: ${{ github.event_name == 'push' }}

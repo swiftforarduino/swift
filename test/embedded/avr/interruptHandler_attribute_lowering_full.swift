@@ -17,6 +17,7 @@
 @interruptHandler
 public func foo() { }
 // CHECK-LABEL: {{.*}}fooyyF
+// CHECK-NOT: sei
 // CHECK: push	r0
 // CHECK: in	r0, 63
 // CHECK: push	r0
