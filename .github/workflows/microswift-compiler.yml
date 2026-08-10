@@ -32,6 +32,10 @@ env:
   # and extra space with the new swift-driver binary
   DEPLOY_TO_SERVER: true
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build:
     runs-on: [self-hosted, macOS, xcode-16.2, cmake]
