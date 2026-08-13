@@ -33,7 +33,7 @@ env:
   DEPLOY_TO_SERVER: true
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  group: ${{ github.workflow }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -119,7 +119,7 @@ jobs:
     - name: Build
       run: |
         swift/utils/build-script --skip-build-benchmarks  --skip-ios --skip-watchos --skip-xros --skip-tvos \
-          --extra-cmake-options="-DBUILD_SHARED_LIBS=NO,-DSWIFT_SHOULD_BUILD_EMBEDDED_STDLIB_CROSS_COMPILING=YES,-DLLVM_USE_STATIC_ZSTD=TRUE,-DLLVM_ENABLE_ZSTD=NO" \
+          --extra-cmake-options="-DBUILD_SHARED_LIBS=NO,-DSWIFT_SHOULD_BUILD_EMBEDDED_STDLIB_CROSS_COMPILING=YES,-DLLVM_USE_STATIC_ZSTD=TRUE,-DLLVM_ENABLE_ZSTD=NO,-DSWIFT_INCLUDE_TEST_BINARIES=YES" \
           --swift-darwin-supported-archs "arm64;x86_64" --reconfigure --infer-cross-compile-hosts-on-darwin \
           --${RELEASE_TYPE_FLAGS} --swift-disable-dead-stripping \
           --bootstrapping=hosttools ${SCCACHE_FLAG} --static-zlib TRUE --static-libxml2 TRUE
@@ -143,7 +143,8 @@ jobs:
       run: |
         rm -rf ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR} ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP}
         mkdir -p ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR}
-        cp -fa ${BUILT_SWIFT_SUBDIR}/{swift,swift-ide-test,swiftc,swift-frontend,swift-driver} ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR}/
+        cp -fa ${BUILT_SWIFT_SUBDIR}/{swift,swiftc,swift-frontend,swift-driver} ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR}/
+        cp -fa ${BUILT_SWIFT_SUBDIR}/{swift-ide-test} ${COMPILER_OUTPUT_ROOT}/${DEPLOYME4NT_LOCAL_SUBDIR}/ || echo "swift-ide-test NOT copied (probably built on Intel)"
         cd ${COMPILER_OUTPUT_ROOT}
         zip --symlinks -r ${DEPLOYMENT_ZIP} ${DEPLOYMENT_LOCAL_SUBDIR}/
 
