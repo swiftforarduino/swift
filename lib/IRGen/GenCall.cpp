@@ -6422,7 +6422,11 @@ Signature irgen::emitCastOfFunctionPointer(IRGenFunction &IGF,
                             : IGF.IGM.getSignature(fnType);
 
   // Emit the cast.
-  fnPtr = IGF.Builder.CreateBitCast(fnPtr, IGF.IGM.FunctionPtrTy);
+  if (fnPtr->getType()->getPointerAddressSpace()!=0) {
+    fnPtr = IGF.Builder.CreateBitCast(fnPtr, IGF.IGM.FunctionPtrTy);
+  } else {
+    fnPtr = IGF.Builder.CreateBitCast(fnPtr, IGF.IGM.PtrTy);
+  }
 
   // Return the information.
   return sig;
