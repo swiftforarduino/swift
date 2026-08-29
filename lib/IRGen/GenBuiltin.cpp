@@ -1048,6 +1048,13 @@ void irgen::emitBuiltinCall(IRGenFunction &IGF, const BuiltinInfo &Builtin,
     // Cast the predicate to a pointer.
     PredPtr = IGF.Builder.CreateBitCast(PredPtr, IGM.PtrTy);
     llvm::Value *FnCode = args.claimNext();
+    if (IGM.DataLayout.getProgramAddressSpace()!=0) {
+      if (isa<llvm::Function>(FnCode)) {
+        auto psPtr = llvm::ConstantExpr::getBitCast(
+          cast<llvm::Function>(FnCode), IGM.Int8ProgramSpacePtrTy);
+        FnCode = llvm::ConstantExpr::getAddrSpaceCast(psPtr, IGM.Int8PtrTy);
+      }
+    }
     // Get the context if any.
     llvm::Value *Context;
     if (Builtin.ID == BuiltinValueKind::OnceWithContext) {
