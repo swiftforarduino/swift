@@ -243,6 +243,13 @@ void SILFunctionBuilder::addFunctionAttributes(
   if (Attrs.hasAttribute<NoDerivativeAttr>())
     F->addSemanticsAttr("autodiff.nonvarying");
 
+  // Propagate @interruptHandler
+  if (Attrs.hasAttribute<InterruptHandlerAttr>()) {
+    F->setIsInterruptHandler(IsInterruptHandler);
+  } else {
+    F->setIsInterruptHandler(IsNotInterruptHandler);
+  }
+
   // Propagate @_dynamicReplacement(for:).
   if (constant.isNull())
     return;

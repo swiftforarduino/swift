@@ -159,7 +159,8 @@ SILFunction *SILFunction::create(
     IsDistributed_t isDistributed, IsRuntimeAccessible_t isRuntimeAccessible,
     IsExactSelfClass_t isExactSelfClass, IsThunk_t isThunk,
     SubclassScope classSubclassScope, Inline_t inlineStrategy, EffectsKind E,
-    SILFunction *insertBefore, const SILDebugScope *debugScope) {
+    SILFunction *insertBefore, const SILDebugScope *debugScope,
+    IsInterruptHandler_t isInterruptHandler) {
   // Get a StringMapEntry for the function.  As a sop to error cases,
   // allow the name to have an empty string.
   llvm::StringMapEntry<SILFunction*> *entry = nullptr;
@@ -178,14 +179,14 @@ SILFunction *SILFunction::create(
     fn->init(linkage, name, loweredType, genericEnv, isBareSILFunction, isTrans,
              serializedKind, entryCount, isThunk, classSubclassScope,
              inlineStrategy, E, debugScope, isDynamic, isExactSelfClass,
-             isDistributed, isRuntimeAccessible);
+             isDistributed, isRuntimeAccessible, isInterruptHandler);
     assert(fn->empty());
   } else {
     fn = new (M) SILFunction(
         M, linkage, name, loweredType, genericEnv, isBareSILFunction, isTrans,
         serializedKind, entryCount, isThunk, classSubclassScope, inlineStrategy,
         E, debugScope, isDynamic, isExactSelfClass, isDistributed,
-        isRuntimeAccessible);
+        isRuntimeAccessible, isInterruptHandler);
   }
   if (entry) entry->setValue(fn);
 
@@ -224,14 +225,15 @@ SILFunction::SILFunction(
     SubclassScope classSubclassScope, Inline_t inlineStrategy, EffectsKind E,
     const SILDebugScope *DebugScope, IsDynamicallyReplaceable_t isDynamic,
     IsExactSelfClass_t isExactSelfClass, IsDistributed_t isDistributed,
-    IsRuntimeAccessible_t isRuntimeAccessible)
+    IsRuntimeAccessible_t isRuntimeAccessible,
+    IsInterruptHandler_t isInterruptHandler)
     : SwiftObjectHeader(functionMetatype), Module(Module),
       index(Module.getNewFunctionIndex()),
       Availability(AvailabilityRange::alwaysAvailable()) {
   init(Linkage, Name, LoweredType, genericEnv, isBareSILFunction, isTrans,
        serializedKind, entryCount, isThunk, classSubclassScope, inlineStrategy, E,
        DebugScope, isDynamic, isExactSelfClass, isDistributed,
-       isRuntimeAccessible);
+       isRuntimeAccessible, isInterruptHandler);
 
   // Set our BB list to have this function as its parent. This enables us to
   // splice efficiently basic blocks in between functions.
@@ -248,7 +250,7 @@ void SILFunction::init(
     SubclassScope classSubclassScope, Inline_t inlineStrategy, EffectsKind E,
     const SILDebugScope *DebugScope, IsDynamicallyReplaceable_t isDynamic,
     IsExactSelfClass_t isExactSelfClass, IsDistributed_t isDistributed,
-    IsRuntimeAccessible_t isRuntimeAccessible) {
+    IsRuntimeAccessible_t isRuntimeAccessible, IsInterruptHandler_t isInterruptHandler) {
   setName(Name);
 
   assert(!LoweredType->hasTypeParameter() &&
@@ -273,6 +275,7 @@ void SILFunction::init(
   this->ExactSelfClass = isExactSelfClass;
   this->IsDistributed = isDistributed;
   this->IsRuntimeAccessible = isRuntimeAccessible;
+  this->IsInterruptHandler = isInterruptHandler;
   this->ForceEnableLexicalLifetimes = DoNotForceEnableLexicalLifetimes;
   this->UseStackForPackMetadata = DoUseStackForPackMetadata;
   this->HasUnsafeNonEscapableResult = false;
@@ -334,7 +337,7 @@ void SILFunction::createSnapshot(int id) {
       getGenericEnvironment(), isBare(), isTransparent(), getSerializedKind(),
       getEntryCount(), isThunk(), getClassSubclassScope(), getInlineStrategy(),
       getEffectsKind(), getDebugScope(), isDynamicallyReplaceable(),
-      isExactSelfClass(), isDistributed(), isRuntimeAccessible());
+      isExactSelfClass(), isDistributed(), isRuntimeAccessible(), isInterruptHandler());
 
   // Copy all relevant properties.
   // TODO: It's really unfortunate that this needs to be done manually. It would
