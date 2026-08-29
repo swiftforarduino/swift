@@ -560,8 +560,17 @@ emitGlobalList(IRGenModule &IGM, ArrayRef<llvm::WeakTrackingVH> handles,
   elts.reserve(handles.size());
   for (auto &handle : handles) {
     auto elt = cast<llvm::Constant>(&*handle);
-    if (elt->getType() != eltTy)
-      elt = llvm::ConstantExpr::getBitCast(elt, eltTy);
+    if (elt->getType() != eltTy) {
+      if (isa<llvm::Function>(elt)&&
+        elt->getType()->getPointerAddressSpace()!=0) {
+        auto psPtr = llvm::ConstantExpr::getBitCast(
+          elt, IGM.Int8ProgramSpacePtrTy);
+        elt = llvm::ConstantExpr::getAddrSpaceCast(psPtr, eltTy);
+      } else {
+        elt = llvm::ConstantExpr::getBitCast(elt, eltTy);
+      }
+    }
+
     elts.push_back(elt);
   }
 
