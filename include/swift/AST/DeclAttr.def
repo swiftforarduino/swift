@@ -741,7 +741,10 @@ SIMPLE_DECL_ATTR(_noMetadata, NoMetadata,
   UserInaccessible | NotSerialized | ABIStableToAdd | ABIBreakingToRemove | APIStableToAdd | APIStableToRemove | ForbiddenInABIAttr,
   138)
 
-// Unused '139'
+SIMPLE_DECL_ATTR(interruptHandler, InterruptHandler,
+  OnFunc,
+  ABIStableToAdd | ABIStableToRemove | APIStableToAdd | APIStableToRemove | UnconstrainedInABIAttr,
+  139)
 
 CONTEXTUAL_SIMPLE_DECL_ATTR(consuming, Consuming,
   OnFunc | OnAccessor,
