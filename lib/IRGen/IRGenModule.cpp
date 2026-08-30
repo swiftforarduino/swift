@@ -1684,7 +1684,18 @@ llvm::ConstantInt *IRGenModule::getBool(bool condition) {
 }
 
 llvm::Constant *IRGenModule::getOpaquePtr(llvm::Constant *ptr) {
-  return llvm::ConstantExpr::getBitCast(ptr, Int8PtrTy);
+  if (isa<llvm::Function>(ptr)) {
+    unsigned AS = ptr->getType()->getPointerAddressSpace();
+
+    if (AS != 0) {
+      auto psPtr = llvm::ConstantExpr::getBitCast(ptr, Int8ProgramSpacePtrTy);
+      return llvm::ConstantExpr::getAddrSpaceCast(psPtr, Int8PtrTy);      
+    }
+    // return llvm::ConstantExpr::getAddrSpaceCast(ptr, Int8PtrTy);
+    // return llvm::ConstantExpr::getBitCast(ptr, Int8ProgramSpacePtrTy);
+  }
+
+  return llvm::ConstantExpr::getBitCast(ptr, Int8PtrTy);  
 }
 
 static void appendEncodedName(raw_ostream &os, StringRef name) {
