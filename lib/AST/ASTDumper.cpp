@@ -5128,6 +5128,7 @@ public:
   TRIVIAL_ATTR_PRINTER(InheritsConvenienceInitializers,
                        inherits_convenience_initializers)
   TRIVIAL_ATTR_PRINTER(Inlinable, inlinable)
+  TRIVIAL_ATTR_PRINTER(InterruptHandler, interruptHandler)
   TRIVIAL_ATTR_PRINTER(Isolated, isolated)
   TRIVIAL_ATTR_PRINTER(KnownToBeLocal, known_to_be_local)
   TRIVIAL_ATTR_PRINTER(LLDBDebuggerFunction, lldb_debugger_function)
