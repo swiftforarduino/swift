@@ -230,6 +230,7 @@ public:
   IGNORED_ATTR(AllowFeatureSuppression)
   IGNORED_ATTR(Safe)
   IGNORED_ATTR(Diagnose)
+  IGNORED_ATTR(InterruptHandler)
 #undef IGNORED_ATTR
 
   void visitABIAttr(ABIAttr *attr) {

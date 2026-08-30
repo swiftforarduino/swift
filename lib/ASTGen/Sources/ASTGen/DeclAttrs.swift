@@ -282,6 +282,7 @@ extension ASTGenVisitor {
         .ImplementationOnly,
         .ImplicitSelfCapture,
         .InheritsConvenienceInitializers,
+        .InterruptHandler,
         .Inlinable,
         .Isolated,
         .LexicalLifetimes,

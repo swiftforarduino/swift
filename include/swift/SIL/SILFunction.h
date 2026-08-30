@@ -77,6 +77,10 @@ enum IsDistributed_t {
   IsNotDistributed,
   IsDistributed,
 };
+enum IsInterruptHandler_t {
+  IsNotInterruptHandler,
+  IsInterruptHandler
+};
 enum IsRuntimeAccessible_t {
   IsNotRuntimeAccessible,
   IsRuntimeAccessible
@@ -517,6 +521,9 @@ private:
   /// Set when this function gives trivial values explicit ownership.
   unsigned HasOwnershipForTrivialValues : 1;
 
+  /// True if the function is an interrupt handler.
+  unsigned IsInterruptHandler : 1;
+
   static void
   validateSubclassScope(SubclassScope scope, IsThunk_t isThunk,
                         const GenericSpecializationInformation *genericInfo) {
@@ -557,7 +564,8 @@ private:
               IsDynamicallyReplaceable_t isDynamic,
               IsExactSelfClass_t isExactSelfClass,
               IsDistributed_t isDistributed,
-              IsRuntimeAccessible_t isRuntimeAccessible);
+              IsRuntimeAccessible_t isRuntimeAccessible,
+              IsInterruptHandler_t isInterruptHandler);
 
   static SILFunction *
   create(SILModule &M, SILLinkage linkage, StringRef name,
@@ -572,7 +580,8 @@ private:
          Inline_t inlineStrategy = InlineDefault,
          EffectsKind EffectsKindAttr = EffectsKind::Unspecified,
          SILFunction *InsertBefore = nullptr,
-         const SILDebugScope *DebugScope = nullptr);
+         const SILDebugScope *DebugScope = nullptr,
+         IsInterruptHandler_t isInterruptHandler = IsInterruptHandler_t::IsNotInterruptHandler);
 
   void init(SILLinkage Linkage, StringRef Name, CanSILFunctionType LoweredType,
             ActorIsolation isolation, GenericEnvironment *genericEnv,
@@ -583,7 +592,7 @@ private:
             const SILDebugScope *DebugScope,
             IsDynamicallyReplaceable_t isDynamic,
             IsExactSelfClass_t isExactSelfClass, IsDistributed_t isDistributed,
-            IsRuntimeAccessible_t isRuntimeAccessible);
+            IsRuntimeAccessible_t isRuntimeAccessible, IsInterruptHandler_t isInterruptHandler);
 
   /// Set has ownership to the given value. True means that the function has
   /// ownership, false means it does not.
@@ -1355,6 +1364,13 @@ public:
 
   Purpose getSpecialPurpose() const { return specialPurpose; }
 
+  /// \return it the function an interrupt handler.
+  IsInterruptHandler_t isInterruptHandler() const { return IsInterruptHandler_t(IsInterruptHandler); }
+
+  void setIsInterruptHandler(IsInterruptHandler_t isInterruptHandler) {
+    IsInterruptHandler = unsigned(isInterruptHandler);
+  }
+  
   /// Get this function's global_init attribute.
   ///
   /// The implied semantics are:
