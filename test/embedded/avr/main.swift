@@ -1,3 +1,5 @@
+// Note: this file is called main.swift as a workaround. It needs a better name eventually.
+
 // RUN: %target-swift-frontend -emit-ir %s %S/Inputs/ConstantSizeBuffer.swift -target avr-none-none-elf \
 // RUN:   -wmo -enable-experimental-feature Embedded | %FileCheck %s
 // REQUIRES: embedded_stdlib_cross_compiling
