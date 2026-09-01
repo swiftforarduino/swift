@@ -4,21 +4,32 @@
 // REQUIRES: embedded_stdlib_cross_compiling
 // REQUIRES: CODEGENERATOR=AVR
 // REQUIRES: swift_feature_Embedded
+// UNSUPPORTED: CPU=wasm32
 
 // IRGen must be able to create llvm coroutines for _modify accessors.
 // This requires a bugfix for an address space cast to get the
 // pointer right on AVR.
+//
+// The accessor has to be spelled out, and it has to be used: the _modify
+// that Swift synthesizes for a get/set pair is [transparent], so it is
+// always inlined, and Embedded Swift only emits the symbols something
+// refers to. Either of those alone means no coroutine reaches the object
+// file to check.
 
 public struct CPUCore {
     public static var statusRegister: UInt8 {
         get {
             return _volatileRegisterReadUInt8(0x5F)
         }
-        set {
-            _volatileRegisterWriteUInt8(0x5F, newValue)
+        _modify {
+            var value = _volatileRegisterReadUInt8(0x5F)
+            yield &value
+            _volatileRegisterWriteUInt8(0x5F, value)
         }
     }
 }
+
+CPUCore.statusRegister &= 0x7F
 
 // CHECK:   .protected  $e10coroutines7CPUCoreV14statusRegisters5UInt8VvMZ ; -- Begin function $e10coroutines7CPUCoreV14statusRegisters5UInt8VvMZ
 // CHECK:    .globl  $e10coroutines7CPUCoreV14statusRegisters5UInt8VvMZ

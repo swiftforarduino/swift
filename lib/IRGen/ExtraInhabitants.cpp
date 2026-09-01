@@ -163,9 +163,10 @@ llvm::Value *PointerInfo::getExtraInhabitantIndex(IRGenFunction &IGF,
       index = IGF.Builder.CreateSub(index, IGF.IGM.getSize(Size(1)));
     }
 
-    // Truncate down to i32 if necessary.
+    // Convert to i32 if necessary. This is a truncation on 64-bit targets and
+    // an extension on targets whose pointers are narrower than 32 bits (AVR).
     if (index->getType() != IGF.IGM.Int32Ty) {
-      index = IGF.Builder.CreateTrunc(index, IGF.IGM.Int32Ty);
+      index = IGF.Builder.CreateZExtOrTrunc(index, IGF.IGM.Int32Ty);
     }
 
     phiValues.push_back({IGF.Builder.GetInsertBlock(), index});
@@ -194,8 +195,11 @@ llvm::Value *irgen::getHeapObjectExtraInhabitantIndex(IRGenFunction &IGF,
 void PointerInfo::storeExtraInhabitant(IRGenFunction &IGF,
                                        llvm::Value *index,
                                        Address dest) const {
+  // The index is an i32; widen or narrow it to pointer size. The narrowing
+  // case only arises on targets with pointers narrower than 32 bits (AVR),
+  // where the index is always small enough to fit.
   if (index->getType() != IGF.IGM.SizeTy) {
-    index = IGF.Builder.CreateZExt(index, IGF.IGM.SizeTy);
+    index = IGF.Builder.CreateZExtOrTrunc(index, IGF.IGM.SizeTy);
   }
 
   if (Nullable) {

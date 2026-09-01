@@ -1036,7 +1036,11 @@ static void addValueWitness(IRGenModule &IGM, ConstantStructBuilder &B,
                             const std::optional<BoundGenericTypeCharacteristics>
                                 boundGenericCharacteristics = std::nullopt) {
   auto addFunction = [&](llvm::Constant *fn) {
-    fn = llvm::ConstantExpr::getBitCast(fn, IGM.Int8PtrTy);
+    // On targets with a non-zero program address space (e.g. AVR, where code
+    // lives in flash) functions are not in the same address space as the value
+    // witness table's slots, so this needs an addrspacecast, not a bitcast.
+    fn = llvm::ConstantExpr::getPointerBitCastOrAddrSpaceCast(fn,
+                                                             IGM.Int8PtrTy);
     B.addSignedPointer(fn, IGM.getOptions().PointerAuth.ValueWitnesses, index);
   };
 

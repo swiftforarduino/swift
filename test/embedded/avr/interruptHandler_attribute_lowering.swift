@@ -6,6 +6,7 @@
 // REQUIRES: embedded_stdlib_cross_compiling
 // REQUIRES: CODEGENERATOR=AVR
 // REQUIRES: swift_feature_Embedded
+// UNSUPPORTED: CPU=wasm32
 
 // These tests check that attributes on swift functions are propagated correctly to LLVM.
 

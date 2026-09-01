@@ -4,6 +4,7 @@
 // xREQUIRES: embedded_stdlib_cross_compiling
 // xREQUIRES: CODEGENERATOR=AVR
 // xREQUIRES: swift_feature_Embedded
+// UNSUPPORTED: CPU=wasm32
 
 // Check that warnings on use of @interruptHandler attribute are correct.
 //-target avr-none-none-elf 
