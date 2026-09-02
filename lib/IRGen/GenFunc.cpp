@@ -2271,9 +2271,14 @@ static llvm::Value *emitPartialApplicationForwarder(
   FunctionPointer fnPtr = [&]() -> FunctionPointer {
     // If we found a function pointer statically, great.
     if (staticFnPtr) {
-      if (staticFnPtr->getPointer(subIGF)->getType() != fnTy) {
+      // Code may live in a non-zero program address space (e.g. AVR flash).
+      // Keep the pointer in that address space; bitcasting across address
+      // spaces is invalid. On targets with a zero program address space this
+      // is the same type as IGM.PtrTy.
+      auto *staticFnTy = IGM.FunctionPtrTy;
+      if (staticFnPtr->getPointer(subIGF)->getType() != staticFnTy) {
         auto fnPtr = staticFnPtr->getPointer(subIGF);
-        fnPtr = subIGF.Builder.CreateBitCast(fnPtr, fnTy);
+        fnPtr = subIGF.Builder.CreateBitCast(fnPtr, staticFnTy);
         return FunctionPointer::createUnsigned(origType, fnPtr, origSig);
       }
       return *staticFnPtr;
@@ -2617,7 +2622,8 @@ std::optional<StackAddress> irgen::emitFunctionPartialApplication(
                                       origSig, origType, substType,
                                       outType, subs, nullptr, argConventions);
     forwarder = emitPointerAuthSign(IGF, forwarder, outAuthInfo);
-    forwarder = IGF.Builder.CreateBitCast(forwarder, IGF.IGM.Int8PtrTy);
+    forwarder = IGF.Builder.CreateBitCast(forwarder,
+                                          IGF.IGM.Int8ProgramSpacePtrTy);
     out.add(forwarder);
 
     llvm::Value *ctx = args.claimNext();
@@ -2764,7 +2770,8 @@ std::optional<StackAddress> irgen::emitFunctionPartialApplication(
       IGF.IGM, staticFn, fnContext != nullptr, origSig, origType, substType,
       outType, subs, &layout, argConventions);
   forwarder = emitPointerAuthSign(IGF, forwarder, outAuthInfo);
-  forwarder = IGF.Builder.CreateBitCast(forwarder, IGF.IGM.Int8PtrTy);
+  forwarder = IGF.Builder.CreateBitCast(forwarder,
+                                        IGF.IGM.Int8ProgramSpacePtrTy);
   out.add(forwarder);
   out.add(data);
   return stackAddr;

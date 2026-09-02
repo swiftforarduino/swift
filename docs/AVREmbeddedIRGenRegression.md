@@ -79,6 +79,18 @@ This is not test-only. Any user compiling a class on this base is affected.
   `addrspacecast` where needed. This is the same treatment already used
   throughout `GenDecl.cpp` and by `IRGenModule::getOpaquePtr`.
 - `lib/IRGen/ExtraInhabitants.cpp` — use `CreateZExtOrTrunc` in both places.
+- `lib/IRGen/GenFunc.cpp` — three sites in the partial-application path. In
+  `emitPartialApplicationForwarder`, the callee type for a statically known
+  function is now `IGM.FunctionPtrTy` (`ptr addrspace(<program AS>)`) instead of
+  `IGM.PtrTy`, and in both arms of `emitFunctionPartialApplication` the
+  forwarder is cast to `IGM.Int8ProgramSpacePtrTy` rather than `IGM.Int8PtrTy`
+  before being added to the closure explosion. `FunctionPtrTy` and
+  `Int8ProgramSpacePtrTy` are a union of the same type
+  (`IRGenModule.h:823-826`) and equal `PtrTy` wherever the program address
+  space is 0, so this is a no-op off AVR. The result matches the layout IRGen
+  already uses for closures, `%swift.function = { ptr addrspace(1), ptr }`, and
+  is the same treatment `FunctionPointer::getExplosionValue` applies in
+  `GenCall.cpp:6647`.
 
 Both are no-ops for every target with 32-bit or wider pointers in address space
 0. Verified: emitted IR is byte-identical before and after for arm64 macOS
@@ -97,14 +109,105 @@ word-address form, and `-c -O` produces a valid object file.
   underlying S4A coroutine address-space fix was fine all along.
 - `UNSUPPORTED: CPU=wasm32` added to the remaining AVR tests that lacked it, so
   the Wasm test suite skips them like the older ones.
+- `test/embedded/avr/partialApplyAddressSpace.swift` — **new**, the regression
+  guard for the `GenFunc.cpp` fix. It defines its own capturing closures rather
+  than leaning on the stdlib, because whether a stdlib closure reaches the
+  client's IRGen depends on how the embedded stdlib was built (see the section
+  below). Two shapes are covered: a multi-value capture, which boxes its context
+  and takes the general path, and a single class-reference capture, which takes
+  the single-refcounted-context path — the two arms cast the forwarder
+  separately, so one test case does not cover the other.
+
+  Note that adding `-Onone`/`-O0` to an existing AVR test would *not* have
+  caught this. `testIRGenFunctioning.swift` already runs at the default
+  `-Onone`; the flag that mattered was the one the *stdlib* was built with, and
+  no RUN line can change that.
 
 ## Known remaining AVR issues (not addressed here)
 
-- **Keypaths** hit the same class of address-space bug in
-  `lib/IRGen/GenFunc.cpp` (~2276 and ~2767, `emitPartialApplicationForwarder` /
-  `emitFunctionPartialApplication`). Fixing one site exposes the next, so it is a
-  small cluster rather than a one-line change.
+- **Dynamic (non-static) callees in `partial_apply`.** `GenFunc.cpp` ~2718 still
+  bitcasts the callee to `IGM.Int8PtrTy` before storing it into the closure
+  context, whose field is a `Builtin.RawPointer` in address space 0. Reaching
+  that path on AVR needs an honest addrspacecast (or a program-space capture
+  field), not a bitcast. The static-callee path — which is what all the current
+  tests and the stdlib hit — is fixed.
 - **`-O0`/`-Onone` codegen is unusable on AVR**: the register allocator runs out
   of registers in stdlib code and `AVRExpandPseudoInsts.cpp` then asserts. This
   reproduces on files with no classes at all, and matters little in practice
   since AVR builds are size-constrained and use optimization.
+
+## The `stdlib=DA` buildbot failure (2026-09-01)
+
+`oss-swift_tools-RA_stdlib-DA_test-simulators-apple-silicon` build b282 failed
+`test/embedded/avr/testIRGenFunctioning.swift`:
+
+```
+Assertion failed: (CastInst::castIsValid(opc, C, Ty) && "Invalid constantexpr cast!"),
+                  function getCast, file Constants.cpp, line 2220.
+While emitting IR SIL function "@$es31_ensureErrorMetadataInitialized...LLyyF".
+ for <<debugloc at ".../stdlib/public/core/EmbeddedRuntime.swift":562:14>>
+  #10 emitPartialApplicationForwarder(...)
+  #11 swift::irgen::emitFunctionPartialApplication(...)
+```
+
+This is the *same* defect cluster, reached from a new direction. It is not a new
+upstream bug: the crashing line has been in `GenFunc.cpp` unchanged for years.
+
+**Trigger.** `Link.cpp:52-56` force-SIL-links every `RuntimeFunctions.def` entry
+— including `swift_allocError` — into *every* embedded program, so
+`_ensureErrorMetadataInitialized` (`EmbeddedRuntime.swift:562-570`, added
+2026-04-14 by `b589f05c107`, #87617) is IRGen'd even by a program that never
+throws. It contains
+
+```swift
+withUnsafeMutablePointer(to: &_errorMetadataStorage.destroy) { p in
+  p.pointee = UnsafeRawPointer(destroyPtr)     // captures destroyPtr
+}
+```
+
+a closure with a capture, i.e. a real `partial_apply` needing a forwarder.
+
+**Why only this bot.** The forwarder only survives to IRGen if the *stdlib's
+serialized SIL* is unoptimized:
+
+| Job | preset line | `swift-stdlib-build-type` | embedded AVR stdlib flag | result |
+| --- | --- | --- | --- | --- |
+| `buildbot,tools=RA,stdlib=DA` | `build-presets.ini:160` | `Debug` | `-Onone` | `partial_apply` survives → **crash** |
+| macOS PR smoke test | `build-presets.ini:668` | `RelWithDebInfo` | `-O` | closure inlined away → passes |
+
+(`swift_optimize_flag_for_build_type`, `stdlib/cmake/modules/SwiftSource.cmake:21-32`:
+`Debug` → `-Onone`, `RelWithDebInfo`/`Release` → `-O`.)
+
+Both presets set `build-embedded-stdlib-cross-compiling` and both build the AVR
+LLVM target, so the lit `REQUIRES:` lines are satisfied either way — the stdlib
+optimization level is the only difference that matters. The sibling test
+`avrCallbackEmission.swift` passes on both because it compiles with `-O`.
+
+**Why it appeared on 2026-09-01 and not in April.** The test itself is only a
+week old on `main`. `testIRGenFunctioning.swift` and `avrCallbackEmission.swift`
+landed via merge `b26460ba975` on **2026-08-24** (the "[AVR] Fix IRGen function
+emission to respect LLVM DataLayout program address space" PR; the 2024-12-30
+date on the file is a stale author date from a long-lived branch). Before that,
+the only AVR test on `main` was `testStdlibFunctioning.swift`, which is
+`-typecheck` only and never reaches IRGen. The PR merged green because PR CI
+runs the `stdlib=RD` smoke test. Nothing landed in `lib/IRGen`, `lib/SIL`,
+`lib/SILOptimizer` or `stdlib/public/core` between 08-29 and 09-01, so the
+first-failure date just reflects when that Debug-stdlib job next ran.
+
+Reproduced locally with the branch compiler on a two-line program — no stdlib
+involvement needed, and none of the S4A patches on this branch affect it:
+
+```swift
+var sink: ((Int) -> Void)? = nil
+func mk(_ a: Int) { sink = { x in globalOut = x &+ a } }   // capture ⇒ forwarder
+```
+
+Fixed by the `GenFunc.cpp` change above, and guarded by the new
+`test/embedded/avr/partialApplyAddressSpace.swift`. Verified by reverting the
+fix and rebuilding: that test is the **only** one of the ten AVR tests that
+fails without it. Reverting just the two `Int8ProgramSpacePtrTy` casts and
+keeping the `FunctionPtrTy` one also still fails — the crash simply moves from
+`emitPartialApplicationForwarder` to `emitFunctionPartialApplication` — so all
+three sites are needed. With the full fix, `test/embedded/avr` is 10/10 and the
+`test/IRGen` failure set is unchanged at the usual 32.
+
