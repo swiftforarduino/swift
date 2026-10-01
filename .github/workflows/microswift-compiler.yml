@@ -90,11 +90,14 @@ jobs:
     - uses: actions/checkout@v3
       with:
         path: swift
-
+    
+    # Probably better to base off a release branch at some point.
+    # But we need some commits from 6.5 so not before then.
     - name: Checkout related projects and configure
       run: |
         swift/utils/update-checkout \
           --scheme main \
+          --tag swift-DEVELOPMENT-SNAPSHOT-2026-09-21-a \
           --clone \
           --skip-history \
           --skip-repository swift \
