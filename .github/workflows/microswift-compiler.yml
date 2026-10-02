@@ -126,6 +126,7 @@ jobs:
           --extra-cmake-options="-DBUILD_SHARED_LIBS=NO,-DSWIFT_SHOULD_BUILD_EMBEDDED_STDLIB_CROSS_COMPILING=YES,-DLLVM_USE_STATIC_ZSTD=TRUE,-DLLVM_ENABLE_ZSTD=NO,-DSWIFT_INCLUDE_TEST_BINARIES=YES" \
           --swift-darwin-supported-archs "arm64;x86_64" --reconfigure --infer-cross-compile-hosts-on-darwin \
           --${RELEASE_TYPE_FLAGS} --swift-disable-dead-stripping \
+          --llbuild --swift-testing --swift-testing-macros --swiftpm --install-all --sourcekit-lsp --install-sourcekit-lsp \
           --bootstrapping=hosttools ${SCCACHE_FLAG} --static-zlib TRUE --static-libxml2 TRUE
 
 # The compiler unit tests for our custom features @realtime and @interruptHandler are currently
