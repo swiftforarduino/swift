@@ -5058,7 +5058,7 @@ void IRGenSILFunction::visitEndApply(BeginApplyInst *i, EndApplyInst *ei) {
 
   // Cast the continuation pointer to the right function pointer type.
   auto continuation = coroutine.Continuation;
-  continuation = Builder.CreateBitCast(continuation, IGM.PtrTy);
+  continuation = Builder.CreateBitCast(continuation, IGM.Int8ProgramSpacePtrTy);
 
   auto schemaAndEntity =
     getCoroutineResumeFunctionPointerAuth(IGM, origCalleeType);

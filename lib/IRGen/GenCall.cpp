@@ -871,7 +871,7 @@ void SignatureExpansion::expandCoroutineResult(bool forContinuation) {
   SmallVector<llvm::Type*, 8> components;
 
   // The continuation pointer.
-  components.push_back(IGM.Int8PtrTy);
+  components.push_back(IGM.Int8ProgramSpacePtrTy);
 
   auto fnConv = getSILFuncConventions();
   for (auto yield : FnType->getYields()) {
@@ -3880,12 +3880,12 @@ llvm::CallBase *CallEmission::emitCallSite() {
     // function type.
     auto origCallee = call->getCalledOperand();
     llvm::Value *opaqueCallee = origCallee;
-    opaqueCallee =
-      IGF.Builder.CreateBitCast(opaqueCallee, IGF.IGM.Int8PtrTy);
+    opaqueCallee = IGF.Builder.CreatePointerBitCastOrAddrSpaceCast(
+        opaqueCallee, IGF.IGM.Int8PtrTy);
     opaqueCallee = IGF.Builder.CreateIntrinsicCall(
         llvm::Intrinsic::coro_prepare_retcon, {opaqueCallee});
-    opaqueCallee =
-      IGF.Builder.CreateBitCast(opaqueCallee, origCallee->getType());
+    opaqueCallee = IGF.Builder.CreatePointerBitCastOrAddrSpaceCast(
+        opaqueCallee, origCallee->getType());
     call->setCalledFunction(fn.getFunctionType(), opaqueCallee);
 
     // Reset the insert point to after the call.
