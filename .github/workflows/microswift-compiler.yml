@@ -143,6 +143,21 @@ jobs:
         export PATH="$(dirname "$(xcrun -f cmake)"):$PATH"
         swift/utils/run-test --build-dir ${BUILT_SWIFT_HOST_DIR} --build skip swift/test/embedded/avr
 
+    - name: Check main binaries only link OS libraries
+      run: |
+        BINARIES=(
+          ${BUILT_SWIFT_SUBDIR}/swift-frontend
+          ${BUILT_SWIFT_SUBDIR}/swift-driver
+          ${BUILT_TOOLCHAIN_SUBDIR}/usr/bin/swift-frontend
+          ${BUILT_TOOLCHAIN_SUBDIR}/usr/bin/swift-driver
+          ${BUILT_TOOLCHAIN_SUBDIR}/usr/bin/swift-package
+          ${BUILT_TOOLCHAIN_SUBDIR}/usr/bin/sourcekit-lsp
+        )
+        if [[ -e ${BUILT_SWIFT_SUBDIR}/swift-ide-test ]]; then
+          BINARIES+=(${BUILT_SWIFT_SUBDIR}/swift-ide-test)
+        fi
+        swift/check-os-only-deps.sh "${BINARIES[@]}"
+
     - name: Stage
       if: ${{ github.event_name == 'push' }}
       continue-on-error: true
