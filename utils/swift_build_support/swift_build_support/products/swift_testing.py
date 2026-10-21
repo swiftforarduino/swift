@@ -127,7 +127,8 @@ class SwiftTestingCMakeShim(cmake_product.CMakeProduct):
         self.generate_toolchain_file_for_darwin_or_linux(
             host_target, override_macos_deployment_version=override_deployment_version)
         self.build_with_cmake([], self.args.build_variant, [],
-                              prefer_native_toolchain=True)
+                              prefer_native_toolchain=True,
+                              ignore_extra_cmake_options=True)
 
     def install(self, host_target):
         install_destdir = self.host_install_destdir(host_target)

@@ -69,7 +69,7 @@ jobs:
         echo "BUILT_SWIFT_DIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64" >> $GITHUB_ENV
         echo "BUILT_SWIFT_HOST_DIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-${ARCH}" >> $GITHUB_ENV
         (/usr/bin/which -s sccache && echo "SCCACHE_FLAG=--sccache" || echo "SCCACHE_FLAG=") >> $GITHUB_ENV
-        echo "BUILT_TOOLCHAIN_SUBDIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/toolchain-macosx-arm64/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/" >> $GITHUB_ENV
+        echo "BUILT_TOOLCHAIN_SUBDIR=${GITHUB_WORKSPACE}/build/Ninja-${BUILD_SUBDIR_SUFFIX}/toolchain" >> $GITHUB_ENV
         # subdirectories are...
         # usr/bin
         # usr/lib/swift/macosx
@@ -95,6 +95,7 @@ jobs:
       run: |
         swift/utils/update-checkout \
           --scheme main \
+          --tag swift-DEVELOPMENT-SNAPSHOT-2026-10-10-a \
           --clone \
           --skip-history \
           --skip-repository swift \
@@ -126,6 +127,7 @@ jobs:
           --extra-cmake-options="-DBUILD_SHARED_LIBS=NO,-DSWIFT_SHOULD_BUILD_EMBEDDED_STDLIB_CROSS_COMPILING=YES,-DLLVM_USE_STATIC_ZSTD=TRUE,-DLLVM_ENABLE_ZSTD=NO,-DSWIFT_INCLUDE_TEST_BINARIES=YES" \
           --swift-darwin-supported-archs "arm64;x86_64" --reconfigure --infer-cross-compile-hosts-on-darwin \
           --${RELEASE_TYPE_FLAGS} --swift-disable-dead-stripping \
+          --llbuild --swift-testing --swift-testing-macros --swiftpm --install-all --sourcekit-lsp --install-sourcekit-lsp --install-destdir=${BUILT_TOOLCHAIN_SUBDIR} --install-prefix=/usr \
           --bootstrapping=hosttools ${SCCACHE_FLAG} --static-zlib TRUE --static-libxml2 TRUE
 
 # The compiler unit tests for our custom features @realtime and @interruptHandler are currently
@@ -141,6 +143,21 @@ jobs:
         export PATH="$(dirname "$(xcrun -f cmake)"):$PATH"
         swift/utils/run-test --build-dir ${BUILT_SWIFT_HOST_DIR} --build skip swift/test/embedded/avr
 
+    - name: Check main binaries only link OS libraries
+      run: |
+        BINARIES=(
+          ${BUILT_SWIFT_SUBDIR}/swift-frontend
+          ${BUILT_SWIFT_SUBDIR}/swift-driver
+          ${BUILT_TOOLCHAIN_SUBDIR}/usr/bin/swift-frontend
+          ${BUILT_TOOLCHAIN_SUBDIR}/usr/bin/swift-driver
+          ${BUILT_TOOLCHAIN_SUBDIR}/usr/bin/swift-package
+          ${BUILT_TOOLCHAIN_SUBDIR}/usr/bin/sourcekit-lsp
+        )
+        if [[ -e ${BUILT_SWIFT_SUBDIR}/swift-ide-test ]]; then
+          BINARIES+=(${BUILT_SWIFT_SUBDIR}/swift-ide-test)
+        fi
+        swift/check-os-only-deps.sh "${BINARIES[@]}"
+
     - name: Stage
       if: ${{ github.event_name == 'push' }}
       continue-on-error: true
@@ -148,7 +165,7 @@ jobs:
         rm -rf ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR} ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP}
         mkdir -p ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR}
         cp -fa ${BUILT_SWIFT_SUBDIR}/{swift,swiftc,swift-frontend,swift-driver} ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR}/
-        cp -fa ${BUILT_SWIFT_SUBDIR}/{swift-ide-test} ${COMPILER_OUTPUT_ROOT}/${DEPLOYME4NT_LOCAL_SUBDIR}/ || echo "swift-ide-test NOT copied (probably built on Intel)"
+        cp -fa ${BUILT_SWIFT_SUBDIR}/swift-ide-test ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR}/ || echo "swift-ide-test NOT copied (probably built on Intel)"
         cd ${COMPILER_OUTPUT_ROOT}
         zip --symlinks -r ${DEPLOYMENT_ZIP} ${DEPLOYMENT_LOCAL_SUBDIR}/
 
@@ -159,7 +176,7 @@ jobs:
       run: |
         rm -rf ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_DIR} -rf ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_ZIP}
         mkdir -p ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_DIR}
-        cp -fa ${BUILT_SWIFT_DIR}/lib ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_DIR}/
+        cp -fa ${BUILT_TOOLCHAIN_SUBDIR}/usr ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_DIR}/
         cd ${COMPILER_OUTPUT_ROOT}
         zip --symlinks -r ${SOURCEKITD_FRAMEWORK_ZIP} ${SOURCEKITD_FRAMEWORK_DIR}/
 
