@@ -35,6 +35,7 @@ env:
   # also we need to try and make the final binaries as small as possible, which isn't helped by doubling up with swift-ide-test
   # and extra space with the new swift-driver binary
   DEPLOY_TO_SERVER: true
+  SWIFT_DRIVER_PATCH: swift-driver-patch3.txt
 
 concurrency:
   group: ${{ github.workflow }}
@@ -93,7 +94,7 @@ jobs:
         swift/utils/update-checkout \
           --scheme main \
           --tag swift-DEVELOPMENT-SNAPSHOT-2026-10-10-a \
-          --clone \
+          --clone --clean --reset-to-remote \
           --skip-history \
           --skip-repository swift \
           --skip-repository swift-log \
@@ -114,9 +115,12 @@ jobs:
 
     - name: Patch Swift Driver
       run: |
-        cp swift/swift-driver-patch3.txt swift-driver/
-        cd swift-driver
-        patch < swift-driver-patch3.txt
+        if [ -e "${SWIFT_DRIVER_PATCH}" ]
+        then
+          cp swift/${SWIFT_DRIVER_PATCH} swift-driver/
+          cd swift-driver
+          git apply ${SWIFT_DRIVER_PATCH} || git apply -R --check ${SWIFT_DRIVER_PATCH} && echo "patch was already applied"
+        fi
 
     - name: Build
       run: |
