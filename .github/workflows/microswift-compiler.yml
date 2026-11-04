@@ -84,9 +84,6 @@ jobs:
     - name: Show environment for debugging
       run: env
 
-    - name: Clean
-      run: rm -rf *
-
     - uses: actions/checkout@v3
       with:
         path: swift
