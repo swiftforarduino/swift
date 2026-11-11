@@ -110,6 +110,14 @@ jobs:
           --skip-repository swift-llvm-bindings \
           --skip-repository swift-sdk-generator \
           --skip-repository wasi-libc \
+          --skip-repository swift-numerics \
+          --skip-repository swift-corelibs-blocksruntime \
+          --skip-repository swift-installer-scripts \
+          --skip-repository swift-format \
+          --skip-repository swift-docc-render-artifact \
+          --skip-repository brotli \
+          --skip-repository boringssl \
+          --skip-repository curl \
           --skip-repository wasmkit
 
     - name: Patch Swift Driver
