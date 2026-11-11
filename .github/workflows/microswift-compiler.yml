@@ -109,7 +109,6 @@ jobs:
           --skip-repository swift-xcode-playground-support \
           --skip-repository swift-llvm-bindings \
           --skip-repository swift-sdk-generator \
-          --skip-repository swift-nio \
           --skip-repository wasi-libc \
           --skip-repository wasmkit
 
