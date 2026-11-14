@@ -118,7 +118,8 @@ jobs:
           --skip-repository brotli \
           --skip-repository boringssl \
           --skip-repository curl \
-          --skip-repository wasmkit
+          --skip-repository wasmkit \
+          --skip-repository swift-toolchain-sarif
 
     - name: Patch Swift Driver
       run: |
