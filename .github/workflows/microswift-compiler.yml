@@ -168,7 +168,7 @@ jobs:
         swift/check-os-only-deps.sh "${BINARIES[@]}"
 
     - name: Stage
-      if: ${{ github.event_name == 'push' }}
+      if: ${{ github.event_name != 'pull_request' }}
       continue-on-error: true
       run: |
         rm -rf ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR} ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP}
@@ -180,7 +180,7 @@ jobs:
 
 
     - name: Stage Sourcekitd
-      if: ${{ github.event_name == 'push' }}
+      if: ${{ github.event_name != 'pull_request' }}
       continue-on-error: true
       run: |
         rm -rf ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_DIR} -rf ${COMPILER_OUTPUT_ROOT}/${SOURCEKITD_FRAMEWORK_ZIP}
